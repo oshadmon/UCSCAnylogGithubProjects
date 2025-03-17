@@ -1,0 +1,6 @@
+GET get processes
+POST myp = create policy my-p where name = "pranav purathepparambil"
+GET get !myp
+POST mnode = blockchain get master where city = "San Diego" bring.ip_port
+GET get !mnode
+POST blockchain insert where policy = !myp and local = true and master = !mnode
