@@ -40,7 +40,7 @@ def make_request(conn, method, command):
     print("conn", conn)
 
     url = f"http://{conn}"
-    # url = "http://127.0.0.1:32049"
+    # url = "http://127.0.0.1:32049" "23.239.12.151:32349"
     headers = {
         "User-Agent": "AnyLog/1.23",
         "command": command,

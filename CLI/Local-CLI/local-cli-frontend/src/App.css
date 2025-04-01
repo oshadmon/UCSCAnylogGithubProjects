@@ -135,3 +135,19 @@
 .toggle-auth-button:hover {
   color: #0056b3;
 }
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table th,
+.data-table td {
+  border: 1px solid #ccc;
+  text-align: left;
+  padding: 8px;
+}
+
+.data-table th {
+  background-color: #f2f2f2;
+}

@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import './App.css';
 import { sendCommand } from './api'; // Adjust as needed
-import TableRenderer from './TableRenderer';
+import DataTable from './DataTable';
 
 function App() {
   const [activeTab, setActiveTab] = useState('connection');
   const [showAuth, setShowAuth] = useState(false);
+
 
   // Form fields
   const [connectInfo, setConnectInfo] = useState('127.0.0.1:32049');
@@ -33,6 +34,7 @@ function App() {
     setError(null);
     setResponse('');
 
+
     try {
       // Pass the selected method along with other fields to your API function.
       const result = await sendCommand({
@@ -41,13 +43,20 @@ function App() {
         command
       });
 
-      const responseText = JSON.stringify(result.data, null, 2);
-      if (responseText.includes('|') && responseText.includes('---')) {
-        console.log("Table response detected");
-        setResponse(responseText);
+      if (Array.isArray(result.data)) {
+        setResponse(result.data)
       } else {
-        setResponse(`Command "${command}" was sent to ${connectInfo}.\n\n\n${JSON.stringify(result.data, null, 2)}`);
+        const responseText = JSON.stringify(result.data, null, 2);
+        if (responseText.includes('|') && responseText.includes('---')) {
+          console.log("Table response detected");
+          setResponse(responseText);
+        } else {
+          setResponse(`Command "${command}" was sent to ${connectInfo}.\n\n\n${JSON.stringify(result.data, null, 2)}`);
+        }
+
       }
+
+
     } catch (err) {
       setError(err.message);
     } finally {
@@ -56,7 +65,6 @@ function App() {
   };
 
   // const isTableResponse = response && response.includes('|') && response.includes('---');
-  const isTableResponse = false;
 
   return (
     <div className="app-container">
@@ -175,8 +183,8 @@ function App() {
 
       {response && (
         <div className="response-box">
-          {isTableResponse ? (
-            <TableRenderer tableText={response} />
+          {Array.isArray(response) ? (
+            <DataTable data={response} />
           ) : (
             <pre>{response}</pre>
           )}
