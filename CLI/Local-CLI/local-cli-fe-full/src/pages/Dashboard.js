@@ -3,7 +3,7 @@ import { Routes, Route } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import TopBar from '../components/TopBar';
 import Client from './Client';
-// import Monitor from './Monitor';
+import Monitor from './Monitor';
 // import Policies from './Policies';
 // import Presets from './Presets';
 import '../styles/Dashboard.css'; // dashboard-specific styles
@@ -17,9 +17,9 @@ const Dashboard = () => {
         <div className="dashboard-main">
           <Routes>
             <Route path="client" element={<Client />} />
-            {/* <Route path="monitor" element={<Monitor />} />
-            <Route path="policies" element={<Policies />} />
-            <Route path="presets" element={<Presets />} /> */}
+            <Route path="monitor" element={<Monitor />} />
+            {/* <Route path="policies" element={<Policies />} /> */}
+            {/* <Route path="presets" element={<Presets />} /> */}
             {/* Default view */}
             <Route path="*" element={<Client />} />
           </Routes>
