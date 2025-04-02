@@ -1,6 +1,5 @@
 # parsers.py
 import json
-import re
 
 def parse_table(text: str) -> list:
     """

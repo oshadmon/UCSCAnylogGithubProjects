@@ -21,18 +21,19 @@ Before you begin, ensure you have the following installed:
     python -m venv .
     ```
 2. Activate the virtual environment:
-    - On Windows:
+    - On Windows (i think):
         ```bash
-        .\Scripts\activate
+        .\venv\Scripts\activate
         ```
     - On macOS/Linux:
         ```bash
-        source bin/activate
+        source ./venv/bin/activate
         ```
 3. Install the required packages:
     ```bash
     pip install -r reqs.txt
     ```
+    Mainly uses the fastapi and requests libraries from python.
 
 4. Run the backend server:
     ```bash
@@ -57,8 +58,8 @@ Before you begin, ensure you have the following installed:
 
 ## Usage
 
-Set up a node using the docker-compose and use the IP and port from the docker container (usually 127.0.0.1:32049).
+Set up a node using the docker-compose and use the IP and port from the docker container (usually `127.0.0.1:32049`).
 
 OR 
 
-Use 23.239.12.151:32349 as the IP and port to connect to a hosted node.
+Use `23.239.12.151:32349` as the IP and port to connect to a hosted node.
