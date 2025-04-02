@@ -12,51 +12,53 @@ Before you begin, ensure you have the following installed:
 - [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
 - A terminal or command-line interface
 
-## Installation
+<!-- ## Installation -->
 
-1. Clone the repository
+## Backend
 
-2. Install dependencies:
+1. Inside the Local-CLI directory, cd into the local-cli-backend directory and run the following command:
+    ```bash
+    python -m venv .
+    ```
+2. Activate the virtual environment:
+    - On Windows:
+        ```bash
+        .\Scripts\activate
+        ```
+    - On macOS/Linux:
+        ```bash
+        source bin/activate
+        ```
+3. Install the required packages:
+    ```bash
+    pip install -r reqs.txt
+    ```
+
+4. Run the backend server:
+    ```bash
+    fastapi dev main.py
+    ```
+
+5. The backend server should now be running at `http://127.0.0.1:8000`.
+
+## Frontend
+
+1. Inside the Local-CLI directory, cd into the local-cli-frontend directory and run the following command:
     ```bash
     npm install
     ```
 
-## Usage
-
-1. Run the CLI:
+2. Start the frontend server:
     ```bash
     npm start
     ```
-    Or, if you use Yarn:
-    ```bash
-    yarn start
-    ```
 
-2. Follow the prompts in the terminal to execute the desired commands.
+3. Open your browser and navigate to `http://localhost:3000` to access the Local-CLI web interface.
 
-## Development
+## Usage
 
-To make changes to the project:
+Set up a node using the docker-compose and use the IP and port from the docker container (usually 127.0.0.1:32049).
 
-1. Start the development environment:
-    ```bash
-    npm run dev
-    ```
-    Or, if you use Yarn:
-    ```bash
-    yarn dev
-    ```
+OR 
 
-2. Make your changes and test them locally.
-
-## Contributing
-
-Contributions are welcome! Please fork the repository, create a feature branch, and submit a pull request.
-
-## License
-
-This project is licensed under the [MIT License](LICENSE).
-
-## Support
-
-If you encounter any issues, feel free to open an issue on the [GitHub repository](https://github.com/your-username/Local-CLI/issues).
+Use 23.239.12.151:32349 as the IP and port to connect to a hosted node.
