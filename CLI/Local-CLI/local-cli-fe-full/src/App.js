@@ -4,6 +4,11 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import './styles/App.css'; // Import your global styles here
 
+
+
+// npm i -D react-router-dom ------> NEED TO INSTALL REACT-ROUTER-DOM TO WORK PROPERLY
+
+
 function App() {
   const isAuthenticated = /* your auth logic here (e.g., token check) */ true;
 
