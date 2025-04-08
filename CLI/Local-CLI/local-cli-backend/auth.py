@@ -22,6 +22,24 @@ def supabase_signup(email, password, firstname, lastname):
     )
     return response
 
+def supabase_login(email, password):
+    response = supabase.auth.sign_in_with_password(
+        {
+            "email": email,
+            "password": password,
+        }
+    )
+    return response
+
+def supabase_logout():
+    response = supabase.auth.sign_out()
+    return response
+
+def supabase_get_user():
+    user = supabase.auth.get_user()
+    return user
+
+
 
 # resp = supabase_signup("ppurathe@ucsc.edu", "pass1234", "peter", "pp")
 

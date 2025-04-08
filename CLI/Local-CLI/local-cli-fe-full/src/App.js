@@ -4,6 +4,8 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Dashboard from './pages/Dashboard';
 import './styles/App.css'; // Import your global styles here
+import { isLoggedIn } from './services/auth';
+
 
 
 
@@ -11,7 +13,8 @@ import './styles/App.css'; // Import your global styles here
 
 
 function App() {
-  const isAuthenticated = /* your auth logic here (e.g., token check) */ true;
+  // localStorage.clear();
+  const isAuthenticated =isLoggedIn();
 
   return (
     <Router>

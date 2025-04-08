@@ -14,6 +14,8 @@ const Dashboard = () => {
   const [nodes, setNodes] = useState([]);
   const [selectedNode, setSelectedNode] = useState(null);
 
+  console.log(localStorage);
+
   // Adds a new node (if valid and not already in the list)
   const handleAddNode = (newNode) => {
     if (newNode && !nodes.includes(newNode)) {

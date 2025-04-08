@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from parsers import parse_response
-from auth import supabase_signup
+from auth import supabase_signup, supabase_get_user, supabase_login, supabase_logout
 from helpers import make_request
 
 app = FastAPI()
@@ -28,21 +28,44 @@ class UserSignupInfo(BaseModel):
     firstname: str
     lastname: str
 
+class UserLoginInfo(BaseModel):
+    email: str
+    password: str
+
 @app.get("/")
 def get_status():
     resp = make_request("127.0.0.1:32049", "GET", "test network")
     return {"status": resp} 
 
+# AUTHENTICATION USING SUPABASE
+
 @app.post("/signup/")
 def signup(info: UserSignupInfo):
-    print("BITCHHSAFBVSDJHVFBJKHFBKJHBFKJHSDFKAJHV")
     print("info", info)
     response = supabase_signup(info.email, info.password, info.firstname, info.lastname)
 
-    print("R1:", response)
-    print("R3:", response.user.id)
+    print("Resp", response)
+    # print("GET USER", supabase_get_user())
+    return {"data": response}
 
-    return {"id": response.user.id}
+@app.get("/get-user/")
+def get_user():
+    user = supabase_get_user()
+    return {"data": user}
+
+@app.post("/login/")
+def login(info: UserLoginInfo):  
+    response = supabase_login(info.email, info.password)
+    return {"data": response}
+
+@app.get("/logout/")
+def logout():
+    response = supabase_logout()
+    return {"data": response}
+
+
+
+# 
 
 
 @app.post("/send-command/")

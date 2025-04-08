@@ -23,10 +23,14 @@ const Signup = () => {
 
     try {
       console.log("Signing up with:", { email, firstName, lastName, password });
-      const result = await signup({email, password, firstName, lastName});
+      const result = await signup({ email, password, firstName, lastName });
       console.log("Signup result:", result);
       // Navigate to the dashboard or login page after a successful signup.
-      navigate('/dashboard');
+      if (result.data.user.aud === "authenticated") {
+        navigate('/dashboard');
+      } else {
+        setError(result.message || "Signup failed.");
+      }
     } catch (err) {
       setError(err.message || "Signup failed.");
     }
@@ -38,52 +42,52 @@ const Signup = () => {
       <form onSubmit={handleSubmit} className="login-form">
         <div className="form-group">
           <label>First Name:</label>
-          <input 
+          <input
             type="text"
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
-            required 
+            required
           />
         </div>
         <div className="form-group">
           <label>Last Name:</label>
-          <input 
+          <input
             type="text"
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
-            required 
+            required
           />
         </div>
         <div className="form-group">
           <label>Email:</label>
-          <input 
+          <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            required 
+            required
           />
         </div>
         <div className="form-group">
           <label>Password:</label>
-          <input 
+          <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            required 
+            required
           />
         </div>
         <div className="form-group">
           <label>Confirm Password:</label>
-          <input 
+          <input
             type="password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            required 
+            required
           />
         </div>
         {error && <div className="error">{error}</div>}
         <button type="submit">Sign Up</button>
-        <p style={{textAlign: 'center', marginTop: '10px'}}>
+        <p style={{ textAlign: 'center', marginTop: '10px' }}>
           Already have an account? <Link to="/login">Login here</Link>.
         </p>
       </form>
