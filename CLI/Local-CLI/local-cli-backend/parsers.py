@@ -1,23 +1,48 @@
 # parsers.py
+import re
 import json
+
 
 def parse_table(text: str) -> list:
     """
-    Parse a table formatted text into a list of dictionaries.
-    Assumes the table uses '|' as delimiter and first row as header.
+    Parse a table-formatted text into a list of dictionaries.
+    This approach uses the positions of the pipe characters in the separator row
+    to determine column boundaries, and then slices the header and data rows accordingly.
     """
     lines = text.strip().splitlines()
-    if not lines:
-        print("No lines found in the input text.")
+    if len(lines) < 2:
+        print("Not enough lines for a table.")
         return []
     
-    # Remove any lines that are purely separators
-    # Assume first line is header
+    # Get the header and separator rows
     header_line = lines[0]
-    headers = [h.strip() for h in header_line.split('  ') if h.strip()]
-
+    separator_line = lines[1]
     
-    # Process each row
+    # Find the positions of the pipe characters in the separator line.
+    # These indices will be used as boundaries.
+    boundaries = [i for i, ch in enumerate(separator_line) if ch == '|']
+    # Also include the start (0) if not already there.
+    if boundaries and boundaries[0] != 0:
+        boundaries = [0] + boundaries
+    else:
+        boundaries = [0] + boundaries
+
+    split_boundaries = [len(i.strip())+1 for i in separator_line.split('|')]
+    split_boundaries.insert(0, 0)
+    split_boundaries = [sum(split_boundaries[:i+1]) for i in range(len(split_boundaries))]
+    split_boundaries.pop()
+
+    headers = []
+    for i in range(len(split_boundaries) - 1):
+        start = split_boundaries[i]
+        end = split_boundaries[i+1]
+        new_header = header_line[start:end]
+        headers.append(new_header.strip())
+
+
+    # Remove any empty header entries (if any)
+    headers = [h for h in headers if h]
+    
     data = []
     for line in lines[2:]:
         # print(line)
@@ -31,6 +56,8 @@ def parse_table(text: str) -> list:
             row = dict(zip(headers, parts))
             data.append(row)
     return data
+
+
 
 def parse_json(text: str) -> dict:
     """

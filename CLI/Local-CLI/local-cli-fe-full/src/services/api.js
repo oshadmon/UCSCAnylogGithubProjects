@@ -1,5 +1,7 @@
 // src/services/api.js
 
+
+
 // Example: "sendCommand" function that POSTs a command to your server
 export async function sendCommand({ connectInfo, method, command }) {
     if (!connectInfo || !command || !method) {
@@ -16,7 +18,7 @@ export async function sendCommand({ connectInfo, method, command }) {
   
       // Example: a POST request using fetch
       // The URL here might be constructed using connectInfo or some known base URL
-      const response = await fetch(`http://127.0.0.1:8000/send-command`, {
+      const response = await fetch(`http://127.0.0.1:8000/send-command/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
