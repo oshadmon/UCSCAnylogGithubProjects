@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from parsers import parse_response
 from auth import supabase_signup, supabase_get_user, supabase_login, supabase_logout
-from helpers import make_request, grab_network_nodes
+from helpers import make_request, grab_network_nodes, monitor_network
 
 app = FastAPI()
 
@@ -80,3 +80,9 @@ def send_command(conn: Connection, command: Command):
 def get_connected_nodes(conn: Connection):
     connected_nodes = grab_network_nodes(conn.conn)
     return {"data": connected_nodes}
+
+@app.post("/monitor/")
+def monitor(conn: Connection):
+    monitored_nodes = monitor_network(conn.conn)
+    return {"data": monitored_nodes}
+

@@ -39,7 +39,7 @@ const Dashboard = () => {
         <div className="dashboard-main">
           <Routes>
             <Route path="client" element={<Client node = {selectedNode}/>} />
-            <Route path="monitor" element={<Monitor />} />
+            <Route path="monitor" element={<Monitor node = {selectedNode}/>} />
             {/* <Route path="policies" element={<Policies />} /> */}
             {/* <Route path="presets" element={<Presets />} /> */}
             {/* Default view */}
