@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from parsers import parse_response
 from auth import supabase_signup, supabase_get_user, supabase_login, supabase_logout
-from helpers import make_request
+from helpers import make_request, grab_network_nodes
 
 app = FastAPI()
 
@@ -65,8 +65,7 @@ def logout():
 
 
 
-# 
-
+# NODE API ENDPOINTS
 
 @app.post("/send-command/")
 def send_command(conn: Connection, command: Command):
@@ -77,27 +76,7 @@ def send_command(conn: Connection, command: Command):
     print("structured_data", structured_data)
     return structured_data
 
-
-# def make_request(conn, method, command):
-#     print("conn", conn)
-
-#     url = f"http://{conn}"
-#     # url = "http://127.0.0.1:32049" "23.239.12.151:32349"
-#     headers = {
-#         "User-Agent": "AnyLog/1.23",
-#         "command": command,
-#     }
-    
-#     try:
-#         if method.upper() == "GET":
-#             response = requests.get(url, headers=headers)
-#         elif method.upper() == "POST":
-#             response = requests.post(url, headers=headers)
-#         else:
-#             raise ValueError("Invalid method. Use 'GET' or 'POST'.")
-        
-#         response.raise_for_status()  # Raise an error for bad status codes
-#         return response.text  # Assuming response is text, change if needed
-#     except requests.exceptions.RequestException as e:
-#         print(f"Error making {method.upper()} request: {e}")
-#         return None
+@app.post("/get-network-nodes/")
+def get_connected_nodes(conn: Connection):
+    connected_nodes = grab_network_nodes(conn.conn)
+    return {"data": connected_nodes}
