@@ -14,16 +14,17 @@ const Dashboard = () => {
   const [nodes, setNodes] = useState([]);
   const [selectedNode, setSelectedNode] = useState(null);
 
-  console.log(localStorage);
+  // console.log(localStorage);
 
   // Adds a new node (if valid and not already in the list)
   const handleAddNode = (newNode) => {
     if (newNode && !nodes.includes(newNode)) {
-      setNodes([...nodes, newNode]);
+      setNodes((nodes) => [...nodes, newNode]);
       // Optionally set it as selected:
-      setSelectedNode(newNode);
+      // setSelectedNode(newNode);
     }
   };
+
 
   return (
     <div className="dashboard-container">

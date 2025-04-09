@@ -20,16 +20,21 @@ def supabase_signup(email, password, firstname, lastname):
             "options": {"data": {"first_name": firstname, "last_name": lastname}},
         }
     )
+    
     return response
 
 def supabase_login(email, password):
-    response = supabase.auth.sign_in_with_password(
-        {
-            "email": email,
-            "password": password,
-        }
-    )
-    return response
+    try:
+        response = supabase.auth.sign_in_with_password(
+            {
+                "email": email,
+                "password": password,
+            }
+        )
+        return response
+    except Exception as e:
+        print("Error logging in:", e)
+        return e
 
 def supabase_logout():
     response = supabase.auth.sign_out()

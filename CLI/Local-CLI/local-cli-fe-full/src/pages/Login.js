@@ -1,6 +1,6 @@
 // src/pages/Login.js
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { login, isLoggedIn } from '../services/auth';
 import '../styles/App.css';
 
@@ -21,11 +21,13 @@ const Login = () => {
 
       const token = localStorage.getItem('authToken');
       console.log("Stored token after login:", token);
-      
+
       if (isLoggedIn()) {
-        navigate('/dashboard');
+        console.log("User is logged in");
+        navigate('/dashboard/client');
+        window.location.reload();
       } else {
-        setError(result.message || "Signup failed.");
+        setError(result.message || "Login failed.");
       }
     } catch (err) {
       setError(err.message || 'Login failed');
@@ -54,8 +56,12 @@ const Login = () => {
             required
           />
         </div>
-        {error && <div className="error">{error}</div>}
+        {/* {error && <div className="error">{error}</div>} */}
         <button type="submit">Log In</button>
+        {error && <div className="error">{error}</div>}
+                <p style={{ textAlign: 'center', marginTop: '10px' }}>
+                  Don't have an account? <Link to="/signup">Sign up here</Link>.
+                </p>
       </form>
     </div>
   );

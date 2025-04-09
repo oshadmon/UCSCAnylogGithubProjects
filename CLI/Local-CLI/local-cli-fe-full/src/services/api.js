@@ -1,7 +1,5 @@
 // src/services/api.js
 
-
-
 // Example: "sendCommand" function that POSTs a command to your server
 export async function sendCommand({ connectInfo, method, command }) {
     if (!connectInfo || !command || !method) {
@@ -18,7 +16,7 @@ export async function sendCommand({ connectInfo, method, command }) {
   
       // Example: a POST request using fetch
       // The URL here might be constructed using connectInfo or some known base URL
-      const response = await fetch(`http://127.0.0.1:8000/send-command/`, {
+      const response = await fetch(`http://127.0.0.1:8000/send-command`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -42,3 +40,14 @@ export async function sendCommand({ connectInfo, method, command }) {
     }
   }
   
+
+  export async function testNetwork (base) {
+    // Here we simply return a dummy list.
+    // (In real code, you’d call your backend endpoint to "test network" based on the base node.)
+    return [
+      "172.24.0.2:32048",
+      "172.24.0.3:32148",
+      "172.24.0.4:32248",
+      "172.24.0.5:32348",
+    ];
+  };

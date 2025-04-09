@@ -14,7 +14,8 @@ import { isLoggedIn } from './services/auth';
 
 function App() {
   // localStorage.clear();
-  const isAuthenticated =isLoggedIn();
+  // const isAuthenticated = isLoggedIn();
+  // console.log("isAuthenticated in APP.js:", isAuthenticated);
 
   return (
     <Router>
@@ -24,10 +25,10 @@ function App() {
         {/* Protected Dashboard Route */}
         <Route
           path="/dashboard/*"
-          element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />}
+          element={isLoggedIn() ? <Dashboard /> : <Navigate to="/login" />}
         />
         {/* Default Route */}
-        <Route path="*" element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} />} />
+        <Route path="*" element={<Navigate to={isLoggedIn() ? "/dashboard" : "/login"} />} />
       </Routes>
     </Router>
   );

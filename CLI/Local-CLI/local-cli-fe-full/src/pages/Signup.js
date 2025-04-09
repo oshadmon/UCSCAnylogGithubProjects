@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { signup } from '../services/auth';
+import { signup, isLoggedIn } from '../services/auth';
 import '../styles/App.css';
 
 const Signup = () => {
@@ -26,8 +26,9 @@ const Signup = () => {
       const result = await signup({ email, password, firstName, lastName });
       console.log("Signup result:", result);
       // Navigate to the dashboard or login page after a successful signup.
-      if (result.data.user.aud === "authenticated") {
-        navigate('/dashboard');
+      if (isLoggedIn()) {
+        navigate('/dashboard/client');
+        window.location.reload();
       } else {
         setError(result.message || "Signup failed.");
       }
