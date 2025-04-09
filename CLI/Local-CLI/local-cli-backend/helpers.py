@@ -2,10 +2,19 @@
 
 from typing import Dict
 import requests
+from parsers import parse_response
 
 
 def grab_network_nodes(conn: str) -> Dict:
-    make_request(conn, "GET", "test network")
+    raw_response = make_request(conn, "GET", "test network")
+    print(raw_response)
+
+    structured_data = parse_response(raw_response)
+    data = structured_data.get("data", {})
+
+    connected_nodes = [node['Address'] for node in data if node['Status'] == "+"]
+    connected_nodes = [node[:-1] + "9" for node in connected_nodes]
+    return connected_nodes
 
 
 def make_request(conn, method, command):
@@ -31,3 +40,4 @@ def make_request(conn, method, command):
     except requests.exceptions.RequestException as e:
         print(f"Error making {method.upper()} request: {e}")
         return None
+    
