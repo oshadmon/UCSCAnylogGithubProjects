@@ -35,26 +35,6 @@ const NodePicker = ({ nodes, selectedNode, onAddNode, onSelectNode }) => {
     }
   };
 
-  // const applyLocal = () => {
-  //   const updatedNodes = nodes.map((node) => {
-  //     const parts = node.split(':');
-  //     if (local && parts.length === 2) {
-  //       return `127.0.0.1:${parts[1]}`;
-  //     }
-  //     return node; // Return the original node if not in local mode
-  //   });
-  //   return updatedNodes;
-  // };
-
-  // const handleLocalChange = (e) => {
-  //   setLocal(e.target.checked);
-  //   const updatedNodes = applyLocal();
-  //   updatedNodes.forEach((node, index) => {
-  //     nodes[index] = node; // Update the nodes array with the modified or original nodes
-  //   });
-  //   // onSelectNode(updatedNodes[0] || ''); // Optionally select the first node
-  // };
-
 
   const makeLocal = (node, isLocal) => {
     if (!node) return node;  // Return if node is empty

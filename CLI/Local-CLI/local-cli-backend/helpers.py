@@ -4,6 +4,41 @@ from typing import Dict
 import requests
 from parsers import parse_response
 
+def monitor_network(conn: str) -> Dict:
+    raw_response = make_request(conn, "GET", "get monitored operators")
+    structured_data = parse_response(raw_response)
+    data = structured_data.get("data", {})
+    vals = list(data.values())
+    monitored_nodes_filtered = filter_dicts_by_keys(vals, [
+        "Node",
+        "node name",
+        "operational time",
+        "elapsed time",
+        "new rows",
+        "total rows",
+        "Free Space Percent",
+        "CPU Percent",
+        "Packets Recv",
+        "Packets Sent",
+        "Network Error"
+      ])
+    return monitored_nodes_filtered
+
+def filter_dicts_by_keys(dict_list, keys_to_keep):
+    """
+    Filters each dictionary in dict_list to keep only the keys in keys_to_keep.
+
+    Parameters:
+        dict_list (list of dict): The list of dictionaries to filter.
+        keys_to_keep (list of str): The list of keys to retain in each dictionary.
+
+    Returns:
+        list of dict: A new list of dictionaries containing only the specified keys.
+    """
+    return [
+        {key: d[key] for key in keys_to_keep if key in d}
+        for d in dict_list
+    ]
 
 def grab_network_nodes(conn: str) -> Dict:
     raw_response = make_request(conn, "GET", "test network")
