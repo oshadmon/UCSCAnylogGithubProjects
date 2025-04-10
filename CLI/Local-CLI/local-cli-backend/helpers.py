@@ -1,8 +1,13 @@
 
-
+from pydantic import BaseModel
 from typing import Dict
 import requests
 from parsers import parse_response
+
+class Policy(BaseModel):
+    name: str  # Policy name
+    data: Dict[str, str]  # Key-value pairs
+
 
 def monitor_network(conn: str) -> Dict:
     raw_response = make_request(conn, "GET", "get monitored operators")
@@ -52,6 +57,46 @@ def grab_network_nodes(conn: str) -> Dict:
     return connected_nodes
 
 
+def make_policy(conn:str, policy: Policy):
+    # Construct the policy command
+    policy_command = f'{policy.name} = create policy {policy.name} where '
+    key_value_pairs = [f"{k} = {v}" for k, v in policy.data.items()]
+    policy_command += " and ".join(key_value_pairs)
+
+    # Submit the policy (POST)
+    print(f"Submitting Policy: {policy_command}")
+    make_request(conn, "POST", policy_command)
+
+    # Retrieve the created policy (GET)
+    get_policy_command = f"get !{policy.name}"
+    print(f"Fetching Policy: {get_policy_command}")
+    policy_response = make_request(conn, "GET", get_policy_command)
+    print(f"Policy Response: {policy_response}")
+
+    # Get the master node IP/Port (POST)
+    master_node_command = 'mnode = blockchain get master bring.ip_port'
+    print(f"Fetching Master Node: {master_node_command}")
+    make_request(conn, "POST", master_node_command)
+
+    # Retrieve master node info (GET)
+    get_master_command = "get !mnode"
+    print(f"Fetching Master Node Info: {get_master_command}")
+    master_node_response = make_request(conn, "GET", get_master_command)
+    print(f"Master Node Response: {master_node_response}")
+
+    # Insert policy into blockchain (POST)
+    blockchain_insert_command = f"blockchain insert where policy = !{policy.name} and local = true and master = !mnode"
+    print(f"Inserting Policy into Blockchain: {blockchain_insert_command}")
+    make_request(conn, "POST", blockchain_insert_command)
+
+    # Retrieve the policy from the blockchain (POST)
+    blockchain_get_command = f"blockchain get {policy.name}"
+    print(f"Fetching Policy from Blockchain: {blockchain_get_command}")
+    blockchain_response = make_request(conn, "POST", blockchain_get_command)
+    print(f"Blockchain Policy Response: {blockchain_response}")
+
+    return blockchain_response
+
 def make_request(conn, method, command, headers=None):
     print("conn", conn)
 
@@ -77,85 +122,4 @@ def make_request(conn, method, command, headers=None):
         print(f"Error making {method.upper()} request: {e}")
         return None
 
-
-def clean_payload_data(payload: str) -> str:
-    """
-    Cleans the payload string for PUT or POST requests.
-    
-    The data is organized as strings where each JSON instance is on a separate line.
-    This function replaces extra New-Line (LF), Tab and Carriage Return (CR) characters 
-    within each JSON instance with a single space and then rejoins the instances with a newline.
-    
-    Parameters:
-        payload (str): The raw payload string potentially containing extra LF, CR, or tab characters.
-    
-    Returns:
-        str: A cleaned payload string where individual JSON instances are separated by a newline.
-    """
-    # Split the payload by newline; these are presumed to be the intended JSON instance separators.
-    lines = payload.splitlines()
-    cleaned_lines = []
-    for line in lines:
-        # Replace tab (\t) and carriage return (\r) with space.
-        cleaned_line = line.replace("\t", " ").replace("\r", " ")
-        # Replace any extra whitespace within the line (including additional LF) with a single space.
-        cleaned_line = " ".join(cleaned_line.split())
-        if cleaned_line:
-            cleaned_lines.append(cleaned_line)
-    return "\n".join(cleaned_lines)
-
-def execute_put_command(conn: str) -> Dict:
-    """
-    Executes a PUT request equivalent to the provided curl command.
-    
-    Curl command:
-      curl --location --request PUT '10.0.0.226:32149' \
-          --header 'type: json' \
-          --header 'dbms: test' \
-          --header 'table: table1' \
-          --header 'Content-Type: text/plain' \
-          --header 'User-Agent: AnyLog/1.23' \
-          -w "\n" \
-          --data-raw '[{"parentelement": "62e71893-92e0-11e9-b465", ...}]'
-    
-    Expected output:
-      {"AnyLog.status": "Success", "AnyLog.hash": "0dd6b959e48c64818bf4748e4ae0c8cb" }
-      
-    Parameters:
-        conn (str): The host and port, e.g. "10.0.0.226:32149".
-    
-    Returns:
-        Dict: The JSON response from the endpoint if successful, otherwise an empty dict.
-    """
-    url = f"http://{conn}"
-    headers = {
-        "type": "json",
-        "dbms": "test",
-        "table": "table1",
-        "Content-Type": "text/plain",
-        "User-Agent": "AnyLog/1.23"
-    }
-    
-    raw_data = (
-        '[{"parentelement": "62e71893-92e0-11e9-b465", "webid": "F1AbEfLbwwL8F6EiS", "device_name": "ADVA FSP3000R7", "value": 0, "timestamp": "2019-10-11T17:05:08.0400085Z"}]\n'
-        '[{"parentelement": "68ae8bef-92e1-11e9-b465", "webid": "F1AbEfLbwwL8F6EiS", "device_name": "Catalyst 3500XL", "value": 50, "timestamp": "2019-10-14T17:22:13.0510101Z"}]\n'
-        '[{"parentelement": "68ae8bef-92e1-11e9-b465", "webid": "F1AbEfLbwwL8F6EiS", "device_name": "Catalyst 3500XL", "value": 50, "timestamp": "2019-10-14T17:22:18.0360107Z"}]'
-    )
-
-    data_payload = clean_payload_data(raw_data)
-    
-    try:
-        # You can either use the customized make_request or call requests.put directly.
-        # Here we call requests.put directly to better mirror the curl command.
-        response = requests.put(url, headers=headers, data=data_payload)
-        response.raise_for_status()  # Raise error for bad responses
-        # The expected output is in JSON format
-        result = response.json()
-        print("PUT request successful:", result)
-        return result
-    except requests.exceptions.RequestException as e:
-        print("Error executing PUT command:", e)
-        return {}
-
-
-execute_put_command('127.0.0.1:32049')
+# blockchain delete policy where id = a29bcfd55cef20c6834f29fbb3aaf882 and master = 172.24.0.2:32048

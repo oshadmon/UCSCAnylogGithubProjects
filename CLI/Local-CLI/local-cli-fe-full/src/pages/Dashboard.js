@@ -4,7 +4,7 @@ import Sidebar from '../components/Sidebar';
 import TopBar from '../components/TopBar';
 import Client from './Client';
 import Monitor from './Monitor';
-// import Policies from './Policies';
+import Policies from './Policies';
 // import Presets from './Presets';
 import '../styles/Dashboard.css'; // dashboard-specific styles
 
@@ -26,6 +26,7 @@ const Dashboard = () => {
   };
 
 
+
   return (
     <div className="dashboard-container">
       <TopBar
@@ -40,7 +41,7 @@ const Dashboard = () => {
           <Routes>
             <Route path="client" element={<Client node = {selectedNode}/>} />
             <Route path="monitor" element={<Monitor node = {selectedNode}/>} />
-            {/* <Route path="policies" element={<Policies />} /> */}
+            <Route path="policies" element={<Policies node = {selectedNode}/>} />
             {/* <Route path="presets" element={<Presets />} /> */}
             {/* Default view */}
             <Route path="*" element={<Client />} />

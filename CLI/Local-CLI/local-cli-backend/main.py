@@ -1,9 +1,10 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from typing import Dict
 from parsers import parse_response
 from auth import supabase_signup, supabase_get_user, supabase_login, supabase_logout
-from helpers import make_request, grab_network_nodes, monitor_network
+from helpers import make_request, grab_network_nodes, monitor_network, make_policy
 
 app = FastAPI()
 
@@ -31,6 +32,10 @@ class UserSignupInfo(BaseModel):
 class UserLoginInfo(BaseModel):
     email: str
     password: str
+
+class Policy(BaseModel):
+    name: str  # Policy name
+    data: Dict[str, str]  # Key-value pairs
 
 @app.get("/")
 def get_status():
@@ -85,4 +90,14 @@ def get_connected_nodes(conn: Connection):
 def monitor(conn: Connection):
     monitored_nodes = monitor_network(conn.conn)
     return {"data": monitored_nodes}
+
+@app.post("/submit-policy/")
+def submit_policy(conn: Connection, policy: Policy):
+    print("conn", conn)
+    print("policy", policy)
+    raw_response = make_policy(conn.conn, policy)
+
+    structured_data = parse_response(raw_response)
+    return structured_data
+
 

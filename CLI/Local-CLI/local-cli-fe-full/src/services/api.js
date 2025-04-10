@@ -113,3 +113,39 @@ export async function monitor({ node }) {
     throw error; // re-throw so the component knows there was an error
   }
 }
+
+
+export async function submitPolicy({ connectInfo, policy }) {
+  if (!connectInfo || !policy) { 
+    alert('Missing required fields');
+    return;
+  }
+
+  try {
+
+    const requestBody = { conn: {conn: connectInfo}, policy: policy };
+
+    const response = await fetch(`http://127.0.0.1:8000/submit-policy/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        // Possibly include auth headers or other tokens here
+      },
+      body: JSON.stringify(requestBody),
+    });
+
+    console.log("Response: ", response);
+
+    if (!response.ok) {
+      throw new Error(`Server responded with status ${response.status},  ${response}`);
+    }
+
+    // Parse JSON response
+    const respData = await response.json();
+    return respData;
+  } catch (error) {
+    // Optionally handle errors
+    console.error('Error getting nodes:', error);
+    throw error; // re-throw so the component knows there was an error
+  }
+}
