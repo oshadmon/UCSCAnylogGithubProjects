@@ -41,7 +41,7 @@ const Policies = ({ node }) => {
             console.log("Policyname:", policyName);
             console.log("Policy ID:", result.data[0][policyName].id);
             setSubmittedPolicyId(result.data[0][policyName].id);
-            alert("Policy submitted successfully!");
+            // alert("Policy submitted successfully!");
         } catch (err) {
             setError(err.message);
         } finally {
@@ -53,12 +53,16 @@ const Policies = ({ node }) => {
         <div className="container">
             <h2>Policy Editor</h2>
 
+            <p>
+                <strong>Connected Node:</strong> {node}
+            </p>
+
             {/* Policy Name Input */}
             <input
                 type="text"
                 placeholder="Enter Policy Name"
                 value={policyName}
-                onChange={(e) => setPolicyName(e.target.value)}
+                onChange={(e) => setPolicyName(e.target.value.toLowerCase())}
                 className="policy-name-input"
             />
 

@@ -94,6 +94,9 @@ const Monitor = ({ node }) => {
     <div>
       <h2>Monitor Section</h2>
       <div style={{ marginBottom: '10px' }}>
+      <p>
+        <strong>Connected Node:</strong> {node}
+      </p>
         <label htmlFor="rerunRate">Rerun Rate (seconds): </label>
         <input
           id="rerunRate"
