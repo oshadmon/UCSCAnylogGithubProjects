@@ -3,6 +3,19 @@ from pydantic import BaseModel
 from typing import Dict
 import requests
 from parsers import parse_response
+import datetime
+import json
+import requests
+
+import anylog_api.anylog_connector as anylog_connector
+
+# Connect to AnyLog / EdgeLake connector
+conn = '10.0.0.11:32249'
+# conn = '127.0.0.1:32149'
+
+auth = ()
+timeout = 30
+anylog_conn = anylog_connector.AnyLogConnector(conn=conn, auth=auth, timeout=timeout)
 
 class Policy(BaseModel):
     name: str  # Policy name
@@ -97,27 +110,48 @@ def make_policy(conn:str, policy: Policy):
 
     return blockchain_response
 
-def make_request(conn, method, command, headers=None):
-    print("conn", conn)
+def make_request(conn, method, command, topic=None, destination=None, payload=None):
 
-    url = f"http://{conn}"
-    # url = "http://127.0.0.1:32049" "23.239.12.151:32349"
-    headers = {
-        "User-Agent": "AnyLog/1.23",
-        "command": command,
-    }
+
+    auth = ()
+    timeout = 30
+    anylog_conn = anylog_connector.AnyLogConnector(conn=conn, auth=auth, timeout=timeout)
+
+
+    if command.startswith("run client () sql"):
+        destination = 'network'
+        command = command.replace("run client () ", '')
+    elif command.startswith("run client ("):
+        end_index = command.find(")")
+        if end_index != -1:
+            destination = command[len("run client ("):end_index].strip()
+            command = command[end_index + 1:].strip()
+    
+
+    print("conn", conn)
+    print("command", command)
+    print("destination", destination)
+
+    # url = f"http://{conn}"
+    # # url = "http://127.0.0.1:32049" "23.239.12.151:32349"
+    # headers = {
+    #     "User-Agent": "AnyLog/1.23",
+    #     "command": command,
+    # }
     
     try:
         if method.upper() == "GET":
-            response = requests.get(url, headers=headers)
+            response = anylog_conn.get(command=command, destination=destination)
+            # response = requests.get(url, headers=headers)
         elif method.upper() == "POST":
-            response = requests.post(url, headers=headers)
+            response = anylog_conn.post(command=command, topic=topic, destination=destination, payload=payload)
+            # response = requests.post(url, headers=headers)
         else:
             raise ValueError("Invalid method. Use 'GET' or 'POST'.")
         
-        response.raise_for_status()  # Raise an error for bad status codes
+        # response.raise_for_status()  # Raise an error for bad status codes
         print("response", response)
-        return response.text  # Assuming response is text, change if needed
+        return response  # Assuming response is text, change if needed
     except requests.exceptions.RequestException as e:
         print(f"Error making {method.upper()} request: {e}")
         return None

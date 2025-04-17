@@ -39,7 +39,8 @@ class Policy(BaseModel):
 
 @app.get("/")
 def get_status():
-    resp = make_request("127.0.0.1:32049", "GET", "test network")
+    print("GET STATUS RUNNING")
+    resp = make_request("23.239.12.151:32349", "GET", "blockchain get *")
     return {"status": resp} 
 
 # AUTHENTICATION USING SUPABASE
@@ -75,7 +76,7 @@ def logout():
 @app.post("/send-command/")
 def send_command(conn: Connection, command: Command):
     raw_response = make_request(conn.conn, command.type, command.cmd)
-    print("raw_response", {raw_response})
+    print("raw_response", raw_response)
 
     structured_data = parse_response(raw_response)
     print("structured_data", structured_data)

@@ -3,6 +3,7 @@ import re
 import json
 
 
+
 def parse_table(text: str) -> list:
     """
     Parse a table-formatted text into a list of dictionaries.
@@ -13,6 +14,18 @@ def parse_table(text: str) -> list:
     if len(lines) < 2:
         print("Not enough lines for a table.")
         return []
+
+    separator_index = 0
+    for i, row in enumerate(lines):
+        if '|' in row:
+            separator_index = i
+            break
+    
+    if separator_index > 0:
+        lines = lines[separator_index-1:]
+
+    print("Lines", lines)
+    print("Separator Index", separator_index)
     
     # Get the header and separator rows
     header_line = lines[0]
@@ -68,7 +81,7 @@ def parse_json(text: str) -> dict:
     except json.JSONDecodeError:
         return {}
 
-def parse_response(raw_text: str) -> dict:
+def parse_response(raw: str) -> dict:
     """
     Unified response parser.
     Checks if the response is JSON, table formatted, or a simple string,
@@ -76,27 +89,31 @@ def parse_response(raw_text: str) -> dict:
     """
 
     # Check if text resembles a table (e.g., has headers and delimiters)
-    if '|' in raw_text:
+    if '|' in raw:
         print("FOUND TABLE")
-        table_data = parse_table(raw_text)
+        table_data = parse_table(raw)
         if table_data:
             return {"type": "table", "data": table_data}
         
+    if type(raw) is list:
+        return {"type": "json", "data": raw}
+    
+    if type(raw) is dict:
+        return {"type": "json", "data": raw}
+        
     # Try to parse as JSON first
-    parsed = parse_json(raw_text)
-    if parsed:
-        return {"type": "json", "data": parsed}
-    
-    
+    # parsed = parse_json(raw_text)
+    # if parsed:
+    #     return {"type": "json", "data": parsed}
     
     # Otherwise, treat it as a simple message
-    return {"type": "string", "data": raw_text.strip()}
+    return {"type": "string", "data": raw.strip()}
 
 
 
-raw = '\r\n    Process         Status       Details                                                                     \r\n    ---------------|------------|---------------------------------------------------------------------------|\r\n    TCP            |Running     |Listening on: 10.10.1.31:32348, Threads Pool: 6                            |\r\n    REST           |Running     |Listening on: 23.239.12.151:32349, Threads Pool: 5, Timeout: 20, SSL: False|\r\n    Operator       |Not declared|                                                                           |\r\n    Blockchain Sync|Running     |Sync every 30 seconds with master using: 10.10.1.10:32048                  |\r\n    Scheduler      |Running     |Schedulers IDs in use: [0 (system)] [1 (user)]                             |\r\n    Blobs Archiver |Not declared|                                                                           |\r\n    MQTT           |Not declared|                                                                           |\r\n    Message Broker |Not declared|No active connection                                                       |\r\n    SMTP           |Not declared|                                                                           |\r\n    Streamer       |Not declared|                                                                           |\r\n    Query Pool     |Running     |Threads Pool: 3                                                            |\r\n    Kafka Consumer |Not declared|                                                                           |\r\n    gRPC           |Not declared|                                                                           |\r\n    OPC-UA Client  |Not declared|                                                                           |\r\n    Publisher      |Not declared|                                                                           |\r\n    Distributor    |Not declared|                                                                           |\r\n    Consumer       |Not declared|                                                                           |\r\n'
+# raw = '\r\n    Process         Status       Details                                                                     \r\n    ---------------|------------|---------------------------------------------------------------------------|\r\n    TCP            |Running     |Listening on: 10.10.1.31:32348, Threads Pool: 6                            |\r\n    REST           |Running     |Listening on: 23.239.12.151:32349, Threads Pool: 5, Timeout: 20, SSL: False|\r\n    Operator       |Not declared|                                                                           |\r\n    Blockchain Sync|Running     |Sync every 30 seconds with master using: 10.10.1.10:32048                  |\r\n    Scheduler      |Running     |Schedulers IDs in use: [0 (system)] [1 (user)]                             |\r\n    Blobs Archiver |Not declared|                                                                           |\r\n    MQTT           |Not declared|                                                                           |\r\n    Message Broker |Not declared|No active connection                                                       |\r\n    SMTP           |Not declared|                                                                           |\r\n    Streamer       |Not declared|                                                                           |\r\n    Query Pool     |Running     |Threads Pool: 3                                                            |\r\n    Kafka Consumer |Not declared|                                                                           |\r\n    gRPC           |Not declared|                                                                           |\r\n    OPC-UA Client  |Not declared|                                                                           |\r\n    Publisher      |Not declared|                                                                           |\r\n    Distributor    |Not declared|                                                                           |\r\n    Consumer       |Not declared|                                                                           |\r\n'
 
-if __name__ == "__main__":
-    print("Testing parse_table")
-    table_result = parse_response(raw)
-    print("Parsed Table Result:", table_result)
+# if __name__ == "__main__":
+#     print("Testing parse_table")
+#     table_result = parse_response(raw)
+#     print("Parsed Table Result:", table_result)
