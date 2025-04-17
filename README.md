@@ -12,6 +12,9 @@ Before you begin, ensure you have the following installed:
 - [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
 - A terminal or command-line interface
 
+
+
+
 <!-- ## Installation -->
 
 ## Backend
@@ -44,7 +47,7 @@ Before you begin, ensure you have the following installed:
 
 ## Frontend
 
-1. Inside the Local-CLI directory, cd into the local-cli-frontend directory and run the following command:
+1. Inside the Local-CLI directory, cd into the local-cli-fe-full directory and run the following command:
     ```bash
     npm install
     ```
@@ -55,6 +58,20 @@ Before you begin, ensure you have the following installed:
     ```
 
 3. Open your browser and navigate to `http://localhost:3000` to access the Local-CLI web interface.
+
+
+## Anylog API
+
+Follow all the instructions of the github below to set up the Anylog API.
+
+https://github.com/AnyLog-co/AnyLog-API/tree/main
+
+Make sure to run this command while the venv of the backend is activated
+
+```bash
+python3 -m pip install $HOME/AnyLog-API/dist/anylog_api-0.0.0-py2.py3-none-any.whl 
+```
+
 
 ## Usage
 
