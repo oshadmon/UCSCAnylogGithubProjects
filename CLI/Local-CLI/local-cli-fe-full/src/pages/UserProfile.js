@@ -68,6 +68,7 @@ const UserProfile = () => {
                 <h1 className="profile-name">{user.first_name} {user.last_name}</h1>
                 <p className="profile-email">{user.email}</p>
                 {/* Add more fields as needed */}
+                {/* NEED CONNECTIONS TO THE NODE BOOKMARKS ETC */}
             </div>
         </div>
     );
