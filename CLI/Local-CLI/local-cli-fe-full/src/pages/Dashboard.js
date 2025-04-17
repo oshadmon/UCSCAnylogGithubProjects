@@ -6,6 +6,7 @@ import Client from './Client';
 import Monitor from './Monitor';
 import Policies from './Policies';
 import AddData from './AddData';
+import UserProfile from './UserProfile';
 // import Presets from './Presets';
 import '../styles/Dashboard.css'; // dashboard-specific styles
 
@@ -44,6 +45,7 @@ const Dashboard = () => {
             <Route path="monitor" element={<Monitor node = {selectedNode}/>} />
             <Route path="policies" element={<Policies node = {selectedNode}/>} />
             <Route path="adddata" element={<AddData node = {selectedNode}/>} />
+            <Route path="userprofile" element={<UserProfile node = {selectedNode}/>} />
             {/* <Route path="presets" element={<Presets />} /> */}
             {/* Default view */}
             <Route path="*" element={<Client />} />

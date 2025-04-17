@@ -33,15 +33,20 @@ class UserLoginInfo(BaseModel):
     email: str
     password: str
 
+class AccessToken(BaseModel):
+    jwt: str
+
 class Policy(BaseModel):
     name: str  # Policy name
     data: Dict[str, str]  # Key-value pairs
 
 @app.get("/")
 def get_status():
-    print("GET STATUS RUNNING")
-    resp = make_request("23.239.12.151:32349", "GET", "blockchain get *")
-    return {"status": resp} 
+    # print("GET STATUS RUNNING")
+    # resp = make_request("23.239.12.151:32349", "GET", "blockchain get *")
+    # return {"status": resp} 
+    user = supabase_get_user()
+    return {"data": user}
 
 # AUTHENTICATION USING SUPABASE
 
@@ -54,9 +59,9 @@ def signup(info: UserSignupInfo):
     # print("GET USER", supabase_get_user())
     return {"data": response}
 
-@app.get("/get-user/")
-def get_user():
-    user = supabase_get_user()
+@app.post("/get-user/")
+def get_user(token: AccessToken):
+    user = supabase_get_user(token.jwt)
     return {"data": user}
 
 @app.post("/login/")

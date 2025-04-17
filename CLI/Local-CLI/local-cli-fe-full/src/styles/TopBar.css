@@ -29,4 +29,15 @@
     padding: 8px 12px;
     cursor: pointer;
   }
+
+
+  .topbar-right a {
+    text-decoration: none;
+    color: #fff;
+    margin-bottom: 10px;
+  }
+  
+  .topbar-right a.active {
+    font-weight: bold;
+  }
   

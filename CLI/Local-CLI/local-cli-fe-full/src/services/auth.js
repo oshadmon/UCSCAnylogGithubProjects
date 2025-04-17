@@ -96,12 +96,16 @@ export async function login({ email, password }) {
 
 export async function getUser() {
     try {
+
+        const requestBody = { jwt: localStorage.getItem('authToken') };
         const response = await fetch(`http://127.0.0.1:8000/get-user/`, {
-            method: 'GET',
+            method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 // Possibly include auth headers or other tokens here
             },
+            body: JSON.stringify(requestBody),
+
         });
 
         console.log("Response: ", response);

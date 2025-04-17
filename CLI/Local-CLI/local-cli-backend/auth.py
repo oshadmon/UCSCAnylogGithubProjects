@@ -40,12 +40,16 @@ def supabase_logout():
     response = supabase.auth.sign_out()
     return response
 
-def supabase_get_user():
-    user = supabase.auth.get_user()
+def supabase_get_user(jwt):
+    user = supabase.auth.get_user(jwt)
+    print("User", user)
     return user
-
-
 
 # resp = supabase_signup("ppurathe@ucsc.edu", "pass1234", "peter", "pp")
 
 # print(resp.user.id)
+
+
+
+
+# clear local storage by going to the browser , inspect, application, storage, clear site data
