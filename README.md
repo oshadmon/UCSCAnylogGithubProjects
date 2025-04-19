@@ -13,8 +13,6 @@ Before you begin, ensure you have the following installed:
 - A terminal or command-line interface
 
 
-
-
 <!-- ## Installation -->
 
 ## Backend
@@ -58,6 +56,11 @@ Before you begin, ensure you have the following installed:
     ```
 
 3. Open your browser and navigate to `http://localhost:3000` to access the Local-CLI web interface.
+
+
+## Supabase
+
+
 
 
 ## Anylog API
