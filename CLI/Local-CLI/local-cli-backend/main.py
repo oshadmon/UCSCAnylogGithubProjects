@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Dict
-from parsers import parse_response
+from parsers import parse_response, infer_schema, build_msg_client_command, prep_to_add_data, parse_check_clients
 from auth import supabase_signup, supabase_get_user, supabase_login, supabase_logout
 from helpers import make_request, grab_network_nodes, monitor_network, make_policy
 
@@ -18,6 +18,10 @@ app.add_middleware(
 )
 class Connection(BaseModel):
     conn: str
+
+class DBConnection(BaseModel):
+    dbms: str
+    table: str
 
 class Command(BaseModel):
     type: str # "GET" or "POST"
@@ -107,3 +111,48 @@ def submit_policy(conn: Connection, policy: Policy):
     return structured_data
 
 
+@app.post("/add-data/")
+def send_data(conn: Connection, dbconn: DBConnection, data: list[Dict]):
+    print("conn", conn.conn)
+    print("db", dbconn.dbms)
+    print("table", dbconn.table)
+    print("data", type(data))
+
+    # infer the schema of the data
+    inferred_schema = infer_schema(data)
+
+    # build the msg client command
+    msg_client_cmd = build_msg_client_command(inferred_schema)
+    print("msg_client_cmd", msg_client_cmd)
+
+    # prep data with dbms and table
+    prepped_data = prep_to_add_data(data, dbconn.dbms, dbconn.table)
+
+    # check for existing msg client
+    check_clients = make_request(conn.conn, "GET", "get msg client where topic = new-data")
+    if "No message client subscriptions" in check_clients:
+        # create new client
+        resp = make_request(conn.conn, "POST", msg_client_cmd)
+        print("New Client:", resp)
+    else: 
+        # get old client id
+        old_client_id = parse_check_clients(check_clients)
+        print(old_client_id)
+
+        # kill old client
+        kill_cmd = f'exit msg client {old_client_id}'
+        make_request(conn.conn, "POST", kill_cmd)
+
+        # create new client
+        resp = make_request(conn.conn, "POST", msg_client_cmd)
+        print("New Client:", resp)
+
+    # send data
+    response = make_request(conn=conn.conn, method="POST", command='data', topic='new-data', payload=prepped_data)
+    print("Data send resp:", response)
+
+    # get streaming to check if data was sent
+    response = make_request(conn.conn, "GET", "get streaming")
+    print("Streaming:", response)
+
+    return {"data": response}

@@ -9,8 +9,8 @@ const Sidebar = () => {
       <NavLink to="client" className={({ isActive }) => isActive ? 'active' : ''}>Client</NavLink>
       <NavLink to="monitor" className={({ isActive }) => isActive ? 'active' : ''}>Monitor</NavLink>
       <NavLink to="policies" className={({ isActive }) => isActive ? 'active' : ''}>Policies</NavLink>
-      {/* <NavLink to="adddata" className={({ isActive }) => isActive ? 'active' : ''}>Add Data</NavLink>
-      <NavLink to="presets" className={({ isActive }) => isActive ? 'active' : ''}>Presets</NavLink> */}
+      <NavLink to="adddata" className={({ isActive }) => isActive ? 'active' : ''}>Add Data</NavLink>
+      {/* <NavLink to="presets" className={({ isActive }) => isActive ? 'active' : ''}>Presets</NavLink> */}
     </nav>
   );
 };

@@ -60,11 +60,11 @@ const UserProfile = () => {
     return (
         <div className="userprofile-container">
             <div className="profile-card">
-                {/* <img
+                <img
           src={user.avatarUrl || '/assets/default-avatar.png'}
           alt="Profile"
           className="profile-avatar"
-        /> */}
+        />
                 <h1 className="profile-name">{user.first_name} {user.last_name}</h1>
                 <p className="profile-email">{user.email}</p>
                 {/* Add more fields as needed */}

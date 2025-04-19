@@ -111,6 +111,63 @@ def parse_response(raw: str) -> dict:
 
 
 
+def prep_to_add_data(data: list, dbms: str, table: str) -> list:
+    """
+    Prepare data for adding to the database.
+    """
+    for record in data:
+        record['dbms'] = dbms
+        record['table'] = table
+    return json.dumps(data)
+
+def infer_schema(data) -> list:
+    print("Parsing JSON")
+    schema = {}
+    for record in data:
+        for key, value in record.items():
+            if key not in schema:
+                schema[key] = type(value).__name__
+    print("Schema", schema)
+    return schema
+
+
+def build_msg_client_command(schema: dict) -> str:
+    """
+    Build a topic string based on the provided parameters.
+    """
+    column_details = []
+
+    for key, value in schema.items():
+        # print(f"Key: {key}, Value: {value}")
+        # if key == 'timestamp':
+        #     val = f'column.timestamp.timestamp="bring [timestamp]"'
+        #     column_details.append(val)
+        # else:
+        #     val = f'column.{key}=(type={value} and value=bring [{key}])'
+        #     column_details.append(val)
+        val = f'column.{key}=(type={value} and value=bring [{key}])'
+        column_details.append(val)
+
+    column_str = ' and '.join(column_details)
+    topic_str = f'run msg client where broker=rest and user-agent=anylog and log=false and topic=(name=new-data and dbms="bring [dbms]" and table="bring [table]" and {column_str})'
+    return topic_str
+
+    # base_str = 'run msg client where broker=rest and user-agent=anylog and log=false and topic=(name=new-data and dbms="bring [dbms]" and table="bring [table]" and column.timestamp.timestamp="bring [timestamp]" and column.value=(type=int and value=bring [value]))'
+
+def parse_check_clients(raw: str) -> dict:
+    """
+    Parse the response from the check clients command.
+    """
+    lines = raw.strip().splitlines()
+    idline = lines[0]
+    ret = idline.split(": ")
+    ret[1] = ret[1].strip()
+    return int(ret[1])
+
+
+    
+
+
 # raw = '\r\n    Process         Status       Details                                                                     \r\n    ---------------|------------|---------------------------------------------------------------------------|\r\n    TCP            |Running     |Listening on: 10.10.1.31:32348, Threads Pool: 6                            |\r\n    REST           |Running     |Listening on: 23.239.12.151:32349, Threads Pool: 5, Timeout: 20, SSL: False|\r\n    Operator       |Not declared|                                                                           |\r\n    Blockchain Sync|Running     |Sync every 30 seconds with master using: 10.10.1.10:32048                  |\r\n    Scheduler      |Running     |Schedulers IDs in use: [0 (system)] [1 (user)]                             |\r\n    Blobs Archiver |Not declared|                                                                           |\r\n    MQTT           |Not declared|                                                                           |\r\n    Message Broker |Not declared|No active connection                                                       |\r\n    SMTP           |Not declared|                                                                           |\r\n    Streamer       |Not declared|                                                                           |\r\n    Query Pool     |Running     |Threads Pool: 3                                                            |\r\n    Kafka Consumer |Not declared|                                                                           |\r\n    gRPC           |Not declared|                                                                           |\r\n    OPC-UA Client  |Not declared|                                                                           |\r\n    Publisher      |Not declared|                                                                           |\r\n    Distributor    |Not declared|                                                                           |\r\n    Consumer       |Not declared|                                                                           |\r\n'
 
 # if __name__ == "__main__":

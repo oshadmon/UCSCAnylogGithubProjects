@@ -1,119 +1,84 @@
 .container {
-    max-width: 600px;
-    margin: 20px auto;
-    padding: 20px;
-    background-color: #fff;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  }
-  
-  h2, h3 {
-    color: #333;
-    margin-bottom: 10px;
-  }
-  
-  .text-input {
-    width: 100%;
-    max-width: 400px;
-    padding: 10px;
-    margin-bottom: 15px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 16px;
-  }
-  
-  .input-group {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 15px;
-  }
-  
-  .input-group input {
-    flex: 1;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 14px;
-  }
-  
-  .input-group button {
-    padding: 8px 12px;
-    background-color: #007bff;
-    border: none;
-    color: #fff;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
-  .input-group button:hover {
-    background-color: #0056b3;
-  }
-  
-  .data-list {
-    list-style: none;
-    padding: 0;
-    margin-bottom: 15px;
-  }
-  
-  .data-list li {
-    padding: 8px;
-    border-bottom: 1px solid #e0e0e0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .data-list li:last-child {
-    border-bottom: none;
-  }
-  
-  .remove-btn {
-    background: transparent;
-    border: none;
-    color: red;
-    cursor: pointer;
-  }
-  
-  .json-preview {
-    background-color: #f8f8f8;
-    border: 1px solid #ddd;
-    padding: 10px;
-    border-radius: 4px;
-    max-height: 200px;
-    overflow: auto;
-    font-size: 14px;
-    margin-bottom: 15px;
-  }
-  
-  .submit-btn {
-    padding: 10px 20px;
-    background-color: #28a745;
-    border: none;
-    border-radius: 4px;
-    color: #fff;
-    cursor: pointer;
-    font-size: 16px;
-  }
-  
-  .submit-btn:disabled {
-    background-color: #94d3a2;
-    cursor: not-allowed;
-  }
-  
-  .error-message {
-    color: red;
-    margin-top: 10px;
-  }
-  
-  .id-box {
-    margin-top: 20px;
-    padding: 15px;
-    background-color: #e0ffe0;
-    border: 1px solid #28a745;
-    border-radius: 4px;
-    text-align: center;
-    font-size: 16px;
-    color: #155724;
-  }
-  
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+h2, h3 {
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.text-input {
+  width: 100%;
+  max-width: 400px;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+/* NEW: style for the JSON file uploader */
+.file-input-group {
+  margin-bottom: 15px;
+}
+.file-input-group input[type="file"] {
+  display: block;
+  width: 100%;
+  max-width: 400px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+/* JSON preview box */
+.json-preview {
+  background-color: #f8f8f8;
+  border: 1px solid #ddd;
+  padding: 10px;
+  border-radius: 4px;
+  max-height: 200px;
+  overflow: auto;
+  font-size: 14px;
+  margin-bottom: 15px;
+}
+
+/* Submit button */
+.submit-btn {
+  padding: 10px 20px;
+  background-color: #28a745;
+  border: none;
+  border-radius: 4px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.submit-btn:disabled {
+  background-color: #94d3a2;
+  cursor: not-allowed;
+}
+
+/* Error & success messages */
+.error-message {
+  color: red;
+  margin-top: 10px;
+}
+
+.id-box {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #e0ffe0;
+  border: 1px solid #28a745;
+  border-radius: 4px;
+  text-align: center;
+  font-size: 16px;
+  color: #155724;
+}
