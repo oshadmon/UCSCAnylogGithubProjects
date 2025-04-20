@@ -37,9 +37,12 @@ Before you begin, ensure you have the following installed:
     Mainly uses the fastapi and requests libraries from python.
 
 4. Run the backend server:
-    ```bash
-    fastapi dev main.py
-    ```
+```bash
+fastapi dev main.py
+
+# Run on cloud 
+fastapi dev CLI/Local-CLI/local-cli-backend/main.py   --host 0.0.0.0 --port 8000
+```
 
 5. The backend server should now be running at `http://127.0.0.1:8000`.
 
@@ -53,6 +56,10 @@ Before you begin, ensure you have the following installed:
 2. Start the frontend server:
     ```bash
     npm start
+   
+   # for ubuntu 
+   export NODE_OPTIONS=--openssl-legacy-provider
+   npm start
     ```
 
 3. Open your browser and navigate to `http://localhost:3000` to access the Local-CLI web interface.
