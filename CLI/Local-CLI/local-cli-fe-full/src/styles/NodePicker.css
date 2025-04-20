@@ -1,0 +1,34 @@
+/* src/styles/NodePicker.css */
+.node-picker-container {
+    display: flex;
+    align-items: center;
+  }
+  
+  .node-picker-select {
+    padding: 5px;
+    font-size: 14px;
+  }
+  
+  .node-picker-input {
+    margin-left: 10px;
+    padding: 5px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .node-picker-btn {
+    margin-left: 5px;
+    padding: 5px 10px;
+    font-size: 14px;
+    background-color: #007bff;
+    border: none;
+    color: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .node-picker-btn:hover {
+    background-color: #0056b3;
+  }
+  

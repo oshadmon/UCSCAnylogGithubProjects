@@ -1,0 +1,43 @@
+/* src/styles/TopBar.css */
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+  }
+  
+  .topbar-left {
+    display: flex;
+    align-items: center;
+  }
+  
+  .logo {
+    height: 40px;
+    margin-right: 15px;
+  }
+  
+  .node-picker {
+    padding: 5px;
+  }
+  
+  .topbar-right .profile-btn {
+    background: #0056b3;
+    border: none;
+    color: #fff;
+    padding: 8px 12px;
+    cursor: pointer;
+  }
+
+
+  .topbar-right a {
+    text-decoration: none;
+    color: #fff;
+    margin-bottom: 10px;
+  }
+  
+  .topbar-right a.active {
+    font-weight: bold;
+  }
+  
