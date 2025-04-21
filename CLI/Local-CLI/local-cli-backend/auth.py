@@ -45,6 +45,11 @@ def supabase_get_user(jwt):
     print("User", user)
     return user
 
+def supabase_refresh_session():
+    session = supabase.auth.refresh_session()
+    print("session", session)
+    return session
+
 # resp = supabase_signup("ppurathe@ucsc.edu", "pass1234", "peter", "pp")
 
 # print(resp.user.id)

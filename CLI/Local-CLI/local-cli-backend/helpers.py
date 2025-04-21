@@ -157,3 +157,107 @@ def make_request(conn, method, command, topic=None, destination=None, payload=No
         return None
 
 # blockchain delete policy where id = a29bcfd55cef20c6834f29fbb3aaf882 and master = 172.24.0.2:32048
+
+
+
+
+
+
+# SENDING DATA TO ANYLOG
+
+
+
+def prep_to_add_data(data: list, dbms: str, table: str) -> list:
+    """
+    Prepare data for adding to the database.
+    """
+    for record in data:
+        record['dbms'] = dbms
+        record['table'] = table
+    return json.dumps(data)
+
+def infer_schema(data) -> list:
+    print("Parsing JSON")
+    schema = {}
+    for record in data:
+        for key, value in record.items():
+            if key not in schema:
+                schema[key] = type(value).__name__
+    print("Schema", schema)
+    return schema
+
+
+def build_msg_client_command(schema: dict) -> str:
+    """
+    Build a topic string based on the provided parameters.
+    """
+    column_details = []
+
+    for key, value in schema.items():
+        # print(f"Key: {key}, Value: {value}")
+        # if key == 'timestamp':
+        #     val = f'column.timestamp.timestamp="bring [timestamp]"'
+        #     column_details.append(val)
+        # else:
+        #     val = f'column.{key}=(type={value} and value=bring [{key}])'
+        #     column_details.append(val)
+        val = f'column.{key}=(type={value} and value=bring [{key}])'
+        column_details.append(val)
+
+    column_str = ' and '.join(column_details)
+    topic_str = f'run msg client where broker=rest and user-agent=anylog and log=false and topic=(name=new-data and dbms="bring [dbms]" and table="bring [table]" and {column_str})'
+    return topic_str
+
+    # base_str = 'run msg client where broker=rest and user-agent=anylog and log=false and topic=(name=new-data and dbms="bring [dbms]" and table="bring [table]" and column.timestamp.timestamp="bring [timestamp]" and column.value=(type=int and value=bring [value]))'
+
+def parse_check_clients(raw: str) -> dict:
+    """
+    Parse the response from the check clients command.
+    """
+    lines = raw.strip().splitlines()
+    idline = lines[0]
+    ret = idline.split(": ")
+    ret[1] = ret[1].strip()
+    return int(ret[1])
+
+
+def send_json_data(conn, dbms, table, data):
+    
+    # infer the schema of the data
+    inferred_schema = infer_schema(data)
+
+    # build the msg client command
+    msg_client_cmd = build_msg_client_command(inferred_schema)
+    print("msg_client_cmd", msg_client_cmd)
+
+    # prep data with dbms and table
+    prepped_data = prep_to_add_data(data, dbms, table)
+
+    # check for existing msg client
+    check_clients = make_request(conn.conn, "GET", "get msg client where topic = new-data")
+    if "No message client subscriptions" in check_clients:
+        # create new client
+        resp = make_request(conn.conn, "POST", msg_client_cmd)
+        print("New Client:", resp)
+    else: 
+        # get old client id
+        old_client_id = parse_check_clients(check_clients)
+        print(old_client_id)
+
+        # kill old client
+        kill_cmd = f'exit msg client {old_client_id}'
+        make_request(conn.conn, "POST", kill_cmd)
+
+        # create new client
+        resp = make_request(conn.conn, "POST", msg_client_cmd)
+        print("New Client:", resp)
+
+    # send data
+    response = make_request(conn=conn.conn, method="POST", command='data', topic='new-data', payload=prepped_data)
+    print("Data send resp:", response)
+
+    # get streaming to check if data was sent
+    response = make_request(conn.conn, "GET", "get streaming")
+    print("Streaming:", response)
+
+    return response 
