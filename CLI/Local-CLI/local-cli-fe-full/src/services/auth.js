@@ -37,10 +37,16 @@ export async function signup({ email, password, firstName, lastName }) {
         const data = await response.json();
 
         if (data.data.session.access_token) {
-            localStorage.setItem('authToken', data.data.session.access_token);
+            localStorage.setItem('accessToken', data.data.session.access_token);
+        }
+        if (data.data.session.refresh_token) {
+            localStorage.setItem('refreshToken', data.data.session.refresh_token);
+        }
+        if (data.data.session.expires_at) {
+            localStorage.setItem('expiresAt', data.data.session.expires_at);
         }
 
-
+        console.log("Data: ", data);
         return data;
     } catch (error) {
         // Optionally handle errors
@@ -82,8 +88,54 @@ export async function login({ email, password }) {
         const data = await response.json();
 
         if (data.data.session.access_token) {
-            localStorage.setItem('authToken', data.data.session.access_token);
+            localStorage.setItem('accessToken', data.data.session.access_token);
         }
+        if (data.data.session.refresh_token) {
+            localStorage.setItem('refreshToken', data.data.session.refresh_token);
+        }
+        if (data.data.session.expires_at) {
+            localStorage.setItem('expiresAt', data.data.session.expires_at);
+        }
+
+        return data;
+    } catch (error) {
+        // Optionally handle errors
+        console.error('Error logging in:', error);
+        throw error; // re-throw so the component knows there was an error
+    }
+}
+
+
+
+export async function logout() {
+
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('expiresAt');
+
+    try {
+
+        const response = await fetch(`http://127.0.0.1:8000/logout/`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                // Possibly include auth headers or other tokens here
+            },
+            // body: JSON.stringify(requestBody),
+        });
+
+
+        // Check if response is okay (2xx)
+        if (!response.ok) {
+            throw new Error(`Server responded with status ${response.status},  ${response}`);
+        }
+
+        console.log("Response: ", response);
+
+
+
+        // // Parse JSON response
+        const data = await response.json();
 
         return data;
     } catch (error) {
@@ -97,7 +149,7 @@ export async function login({ email, password }) {
 export async function getUser() {
     try {
 
-        const requestBody = { jwt: localStorage.getItem('authToken') };
+        const requestBody = { jwt: localStorage.getItem('accessToken') };
         const response = await fetch(`http://127.0.0.1:8000/get-user/`, {
             method: 'POST',
             headers: {
@@ -125,9 +177,31 @@ export async function getUser() {
     }
 }
 
+
+
 export function isLoggedIn() {
     // Check if the token is present in localStorage
-    // console.log("isLoggedIn: ", !!localStorage.getItem('authToken'));
+    // console.log("Access Token: ", localStorage.getItem('accessToken'));
+
+    // console.log("Expiry time:", localStorage.getItem('expiresAt'));
+
+    const expiresAt = localStorage.getItem('expiresAt');
+    const now = Date.now()/1000;
+    const expired = now >= expiresAt;
+
+
+    console.log("Current time:", now);
+    console.log("Expires at time:", expiresAt);
+    console.log("Is token expired?", expired);
+
+    if (expired) {
+        console.log("Token has expired");
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        localStorage.removeItem('expiresAt');
+        return false;
+    }
+    
     // return !!localStorage.getItem('authToken');
     return true; // For testing purposes, always return true
   }

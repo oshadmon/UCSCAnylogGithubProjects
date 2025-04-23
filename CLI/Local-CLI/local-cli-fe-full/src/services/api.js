@@ -116,14 +116,14 @@ export async function monitor({ node }) {
 
 
 export async function submitPolicy({ connectInfo, policy }) {
-  if (!connectInfo || !policy) { 
+  if (!connectInfo || !policy) {
     alert('Missing required fields');
     return;
   }
 
   try {
 
-    const requestBody = { conn: {conn: connectInfo}, policy: policy };
+    const requestBody = { conn: { conn: connectInfo }, policy: policy };
 
     const response = await fetch(`http://127.0.0.1:8000/submit-policy/`, {
       method: 'POST',
@@ -161,9 +161,90 @@ export async function addData({ connectInfo, db, table, data }) {
 
   try {
 
-    const requestBody = { conn: {conn: connectInfo}, dbconn: {dbms: db, table: table}, data: data };
+    const requestBody = { conn: { conn: connectInfo }, dbconn: { dbms: db, table: table }, data: data };
 
     const response = await fetch(`http://127.0.0.1:8000/add-data/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        // Possibly include auth headers or other tokens here
+      },
+      body: JSON.stringify(requestBody),
+    });
+
+    console.log("Response: ", response);
+
+    if (!response.ok) {
+      throw new Error(`Server responded with status ${response.status},  ${response}`);
+    }
+
+    // Parse JSON response
+    const respData = await response.json();
+    return respData;
+  } catch (error) {
+    // Optionally handle errors
+    console.error('Error getting nodes:', error);
+    throw error; // re-throw so the component knows there was an error
+  }
+}
+
+
+
+
+export async function bookmarkNode({ jwt, node }) {
+  if (!jwt || !node) {
+    alert('Missing required fields');
+    return;
+  }
+
+  console.log("bookmarkNode called with jwt:", jwt, "and node:", node);
+
+  try {
+
+    const requestBody = { conn: { conn: node }, token: { jwt: jwt } };
+
+    const response = await fetch(`http://127.0.0.1:8000/bookmark-node/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        // Possibly include auth headers or other tokens here
+      },
+      body: JSON.stringify(requestBody),
+    });
+
+    console.log("Response: ", response);
+
+    if (!response.ok) {
+      throw new Error(`Server responded with status ${response.status},  ${response}`);
+    }
+
+    // Parse JSON response
+    const respData = await response.json();
+    return respData;
+  } catch (error) {
+    // Optionally handle errors
+    console.error('Error getting nodes:', error);
+    throw error; // re-throw so the component knows there was an error
+  }
+}
+
+
+
+export async function getBookmarks({ jwt }) {
+  if (!jwt) {
+    alert('Missing required fields');
+    return;
+  }
+
+
+  console.log("getBookmarks called with jwt:", jwt);
+
+
+  try {
+
+    const requestBody = { jwt: jwt} ;
+
+    const response = await fetch(`http://127.0.0.1:8000/get-bookmarked-nodes/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

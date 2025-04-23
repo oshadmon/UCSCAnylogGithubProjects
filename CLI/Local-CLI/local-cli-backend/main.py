@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Dict
 from parsers import parse_response
-from auth import supabase_signup, supabase_get_user, supabase_login, supabase_logout, supabase_refresh_session
+from auth import supabase_signup, supabase_get_user, supabase_login, supabase_logout, supabase_bookmark_node, supabase_get_bookmarked_nodes
 from helpers import make_request, grab_network_nodes, monitor_network, make_policy, send_json_data
 
 app = FastAPI()
@@ -47,10 +47,10 @@ class Policy(BaseModel):
 @app.get("/")
 def get_status():
     # print("GET STATUS RUNNING")
-    # resp = make_request("23.239.12.151:32349", "GET", "blockchain get *")
-    # return {"status": resp} 
-    user = supabase_get_user()
-    return {"data": user}
+    resp = make_request("23.239.12.151:32349", "GET", "blockchain get *")
+    return {"status": resp} 
+    # user = supabase_get_user()
+    # return {"data": user}
 
 # AUTHENTICATION USING SUPABASE
 
@@ -59,15 +59,16 @@ def signup(info: UserSignupInfo):
     print("info", info)
     response = supabase_signup(info.email, info.password, info.firstname, info.lastname)
 
-    print("Resp", response)
+    print("Resp:", response)
     # print("GET USER", supabase_get_user())
     return {"data": response}
 
 @app.post("/get-user/")
 def get_user(token: AccessToken):
-    # user = supabase_get_user(token.jwt)
-    print("token", token.jwt)
-    user = supabase_refresh_session()
+    print("getuser token", token)
+    user = supabase_get_user(token.jwt)
+    # print("token", token.jwt)
+    # user = supabase_refresh_session()
     return {"data": user}
 
 @app.post("/login/")
@@ -78,6 +79,7 @@ def login(info: UserLoginInfo):
 @app.get("/logout/")
 def logout():
     response = supabase_logout()
+    print(response)
     return {"data": response}
 
 
@@ -125,3 +127,36 @@ def send_data(conn: Connection, dbconn: DBConnection, data: list[Dict]):
     structured_data = parse_response(raw_response)
     return structured_data
 
+
+@app.post("/bookmark-node/")
+def bookmark_node(token: AccessToken, conn: Connection):
+    """
+    Bookmark a node by sending a command to the AnyLog server.
+    """
+    print("token", token.jwt)
+    print("node", conn.conn)
+
+    user = supabase_get_user(token.jwt)
+
+    print(user.user.id)
+
+    user_id = user.user.id
+
+    resp = supabase_bookmark_node(user_id, conn.conn)
+    print("Bookmark response:", resp)
+
+    return {"data": resp}
+
+
+@app.post("/get-bookmarked-nodes/")
+def get_bookmarked_nodes(token: AccessToken):
+    """
+    Get all bookmarked nodes for the authenticated user.
+    """
+    print("token: ", token)
+    user = supabase_get_user(token.jwt)
+    user_id = user.user.id
+    print("User ID:", user_id)
+    resp = supabase_get_bookmarked_nodes(user_id)
+    print("Bookmarked nodes response:", resp)
+    return {"data": resp.data}

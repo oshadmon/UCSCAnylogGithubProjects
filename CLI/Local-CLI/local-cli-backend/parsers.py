@@ -2,6 +2,80 @@
 import re
 import json
 
+def parse_table_fixed(text: str) -> list:
+    lines = text.strip().splitlines()
+
+    lines = text.strip().splitlines()
+    if len(lines) < 2:
+        print("Not enough lines for a table.")
+        return []
+
+    separator_index = 0
+    for i, row in enumerate(lines):
+        if '|' in row or '---' in row:
+            separator_index = i
+            break
+    
+    if separator_index > 0:
+        lines = lines[separator_index-1:]
+
+    print("Lines", lines)
+    print("Separator Index", separator_index)
+    
+    # Get the header and separator rows
+    header_line = lines[0]
+    separator_line = lines[1]
+
+    print("Header Line", header_line)
+    print("Separator Line", separator_line)
+
+    try:
+        cutoff_index = lines.index('')
+        lines = lines[:cutoff_index]
+    except ValueError:
+        pass  # No empty line found, proceed with the original lines
+
+    print("lines", lines)
+
+    boundaries = [i for i, ch in enumerate(separator_line) if ch == ' ']
+
+    if boundaries and boundaries[0] != 0:
+        boundaries = [0] + boundaries
+    else:
+        boundaries = [0] + boundaries
+
+    split_boundaries = [len(i.strip())+1 for i in separator_line.split(' ')]
+    split_boundaries.insert(0, 0)
+    split_boundaries = [sum(split_boundaries[:i+1]) for i in range(len(split_boundaries))]
+    split_boundaries.pop()
+
+    headers = []
+    for i in range(len(split_boundaries) - 1):
+        start = split_boundaries[i]
+        end = split_boundaries[i+1]
+        new_header = header_line[start:end]
+        headers.append(new_header.strip())
+
+
+    # Remove any empty header entries (if any)
+    headers = [h for h in headers if h]
+
+    print("Headers", headers)
+
+    data = []
+    for row in lines[2:]:
+        parts = []
+        for i in range(len(split_boundaries) - 1):
+            start = split_boundaries[i]
+            end = split_boundaries[i+1]
+            new_row_item = row[start:end]
+            parts.append(new_row_item.strip())
+
+        if len(parts) == len(headers):
+            new_row = dict(zip(headers, parts))
+            data.append(new_row)
+    return data
+
 
 
 def parse_table(text: str) -> list:
@@ -17,7 +91,7 @@ def parse_table(text: str) -> list:
 
     separator_index = 0
     for i, row in enumerate(lines):
-        if '|' in row:
+        if '|' in row or '---' in row:
             separator_index = i
             break
     
@@ -92,6 +166,11 @@ def parse_response(raw: str) -> dict:
     if '|' in raw:
         print("FOUND TABLE")
         table_data = parse_table(raw)
+        if table_data:
+            return {"type": "table", "data": table_data}
+    elif '---' in raw:
+        print("FOUND FIXED TABLE NO | DELIMITERS")
+        table_data = parse_table_fixed(raw)
         if table_data:
             return {"type": "table", "data": table_data}
         

@@ -64,6 +64,12 @@
     border-radius: 4px;
     white-space: pre-wrap;
   }
+
+  .response-box pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+  
   
   .error-message {
     margin-top: 20px;

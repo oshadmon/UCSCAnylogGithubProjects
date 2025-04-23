@@ -28,7 +28,7 @@ function App() {
           element={isLoggedIn() ? <Dashboard /> : <Navigate to="/login" />}
         />
         {/* Default Route */}
-        <Route path="*" element={<Navigate to={isLoggedIn() ? "/dashboard" : "/login"} />} />
+        <Route path="*" element={<Navigate to={isLoggedIn() ? "/dashboard/client" : "/login"} />} />
       </Routes>
     </Router>
   );

@@ -126,7 +126,7 @@ const Client = ({ node }) => {
           {Array.isArray(response) ? (
             <DataTable data={response} />
           ) : (
-            <pre>{response}</pre>
+            <pre>{JSON.stringify(response, null, 2)}</pre>
           )}
         </div>
       )}
