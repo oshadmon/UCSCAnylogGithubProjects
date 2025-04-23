@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Dict
 from parsers import parse_response
-from auth import supabase_signup, supabase_get_user, supabase_login, supabase_logout, supabase_bookmark_node, supabase_get_bookmarked_nodes
+from auth import supabase_signup, supabase_get_user, supabase_login, supabase_logout, supabase_bookmark_node, supabase_get_bookmarked_nodes, supabase_delete_bookmarked_node
 from helpers import make_request, grab_network_nodes, monitor_network, make_policy, send_json_data
 
 app = FastAPI()
@@ -160,3 +160,19 @@ def get_bookmarked_nodes(token: AccessToken):
     resp = supabase_get_bookmarked_nodes(user_id)
     print("Bookmarked nodes response:", resp)
     return {"data": resp.data}
+    
+@app.post("/delete-bookmarked-node/")
+def delete_bookmarked_node(token: AccessToken, conn: Connection):
+    """
+    Delete a bookmarked node for the authenticated user.
+    """
+    print("token: ", token.jwt)
+    print("node: ", conn.conn)
+
+    user = supabase_get_user(token.jwt)
+    user_id = user.user.id
+
+    response = supabase_delete_bookmarked_node(user_id, conn.conn)
+    print("Delete bookmark response:", response)
+
+    return {"data": response.data}

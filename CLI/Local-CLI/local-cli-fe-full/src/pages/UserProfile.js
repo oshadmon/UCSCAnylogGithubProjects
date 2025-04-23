@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { getUser, logout } from '../services/auth'; // Adjust path as needed
-import { getBookmarks } from '../services/api';
-import DataTable from '../components/DataTable'; // Adjust path as needed
+import { getBookmarks, deleteBookmarkedNode } from '../services/api';
+import BookmarkTable from '../components/BookmarkTable';
+
 // import '../styles/UserProfile.css';
 
 const UserProfile = () => {
@@ -88,6 +89,17 @@ const UserProfile = () => {
             </div>
         );
     }
+    const handleDeleteBookmark = async (node) => {
+        const jwt = localStorage.getItem('accessToken');
+        try {
+            await deleteBookmarkedNode({ jwt, node });
+            setBookmarks((prev) => prev.filter((b) => b.node !== node));
+        } catch (err) {
+            console.error('Error deleting bookmark:', err);
+            alert('Failed to delete bookmark');
+        }
+    };
+    
 
     return (
         <div className="userprofile-container">
@@ -125,7 +137,8 @@ const UserProfile = () => {
                 ) : bookmarks.length === 0 ? (
                     <div>No bookmarks yet.</div>
                 ) : (
-                    <DataTable data={bookmarks} />
+                    <BookmarkTable bookmarks={bookmarks} onDelete={handleDeleteBookmark} />
+
                 )}
             </div>
         </div>

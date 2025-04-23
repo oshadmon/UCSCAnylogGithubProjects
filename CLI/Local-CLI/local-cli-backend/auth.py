@@ -80,6 +80,17 @@ def supabase_get_bookmarked_nodes(id):
     response = supabase.table("bookmarks").select("*").eq("user_id", id).execute()
     return response
 
+def supabase_delete_bookmarked_node(id, node):
+    response = (
+        supabase
+        .table("bookmarks")
+        .delete()
+        .eq("user_id", id)
+        .eq("node", node)
+        .execute()
+    )
+    return response
+
 
 # resp = supabase_signup("ppurathe@ucsc.edu", "pass1234", "peter", "pp")
 
