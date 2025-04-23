@@ -117,6 +117,8 @@ def make_request(conn, method, command, topic=None, destination=None, payload=No
     timeout = 30
     anylog_conn = anylog_connector.AnyLogConnector(conn=conn, auth=auth, timeout=timeout)
 
+    blobs = False
+
 
     if command.startswith("run client () sql"):
         destination = 'network'
@@ -126,6 +128,10 @@ def make_request(conn, method, command, topic=None, destination=None, payload=No
         if end_index != -1:
             destination = command[len("run client ("):end_index].strip()
             command = command[end_index + 1:].strip()
+
+    if "file using file" in command:
+        blobs = True
+
     
 
     print("conn", conn)
@@ -151,6 +157,9 @@ def make_request(conn, method, command, topic=None, destination=None, payload=No
         
         # response.raise_for_status()  # Raise an error for bad status codes
         print("response", response)
+
+        if blobs:
+            return { 'blobs': response }
         return response  # Assuming response is text, change if needed
     except requests.exceptions.RequestException as e:
         print(f"Error making {method.upper()} request: {e}")

@@ -242,7 +242,7 @@ export async function getBookmarks({ jwt }) {
 
   try {
 
-    const requestBody = { jwt: jwt} ;
+    const requestBody = { jwt: jwt } ;
 
     const response = await fetch(`http://127.0.0.1:8000/get-bookmarked-nodes/`, {
       method: 'POST',

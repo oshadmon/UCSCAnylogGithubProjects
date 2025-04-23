@@ -3,12 +3,23 @@ import React, { useState } from 'react';
 import { getConnectedNodes, bookmarkNode } from '../services/api'; // Adjust the import path as necessary
 import '../styles/NodePicker.css'; // Optional: create a CSS file for node picker styling
 import { isLoggedIn } from '../services/auth';
+import { useEffect } from 'react';
 
 const NodePicker = ({ nodes, selectedNode, onAddNode, onSelectNode }) => {
   const [newNode, setNewNode] = useState('');
   const [error, setError] = useState(null);
   const [local, setLocal] = useState(false);
   const [bookmarkMsg, setBookmarkMsg] = useState(null);
+
+  useEffect(() => {
+    if (!bookmarkMsg) return;
+
+    const timer = setTimeout(() => {
+      setBookmarkMsg(null);
+    }, 5000); // 3000ms = 3s
+
+    return () => clearTimeout(timer);
+  }, [bookmarkMsg]);
 
 
   const handleAdd = () => {

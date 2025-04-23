@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import DataTable from '../components/DataTable'; // Adjust path as needed
+import BlobsTable from '../components/BlobsTable'; // Adjust path as needed
 import { sendCommand } from '../services/api'; // Adjust path as needed
 import '../styles/Client.css'; // Optional: create client-specific CSS
+import { useEffect } from 'react';
 
 const Client = ({ node }) => {
   // Since the node is provided as a prop, we no longer need a "Connect info" field.
@@ -9,10 +11,21 @@ const Client = ({ node }) => {
   const [authPassword, setAuthPassword] = useState('');
   const [command, setCommand] = useState('get status');
   const [method, setMethod] = useState('GET'); // Default to GET
-  const [response, setResponse] = useState('');
+  // const [response, setResponse] = useState('');
+
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [showAuth, setShowAuth] = useState(false);
+
+  const [resultType, setResultType] = useState('');       // 'table' | 'blobs' | other
+  const [responseData, setResponseData] = useState(null); // array or string
+  const [selectedBlobs, setSelectedBlobs] = useState([]); // only for blobs
+
+
+  useEffect(() => {
+    console.log('Selected blobs:', selectedBlobs);
+  }, [selectedBlobs]);
 
 
   const toggleAuth = () => {
@@ -23,7 +36,8 @@ const Client = ({ node }) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    setResponse('');
+    setResponseData(null);
+    setResultType('');
 
     try {
       const result = await sendCommand({
@@ -34,11 +48,17 @@ const Client = ({ node }) => {
         authPassword,
       });
 
+      setResultType(result.type);
+
       // If the API returns an array (table data), store it directly.
       if (result.type === "table") {
-        setResponse(result.data);
+        setResponseData(result.data);
+      }
+      else if (result.type === 'blobs') {
+        setResponseData(result.data);
+        setSelectedBlobs([]);  // clear any previous selection
       } else {
-        setResponse(
+        setResponseData(
           `Command "${command}" was sent to ${node}.\n\n\n${JSON.stringify(
             result.data,
             null,
@@ -121,15 +141,42 @@ const Client = ({ node }) => {
         </div>
       )}
 
-      {response && (
-        <div className="response-box">
-          {Array.isArray(response) ? (
-            <DataTable data={response} />
+      {resultType === 'blobs' && (
+        <div className="selected-blobs">
+          <h3>Selected Blobs:</h3>
+          {selectedBlobs.length > 0 ? (
+            <ul>
+              {selectedBlobs.map((blob, index) => (
+                <li key={index}>{JSON.stringify(blob)}</li>
+              ))}
+            </ul>
           ) : (
-            <pre>{JSON.stringify(response, null, 2)}</pre>
+            <p>No blobs selected.</p>
           )}
         </div>
       )}
+
+      {responseData && (
+        <div className="response-box">
+          {resultType === 'table' && Array.isArray(responseData) && (
+            <DataTable data={responseData} />
+          )}
+
+          {resultType === 'blobs' && Array.isArray(responseData) && (
+            <BlobsTable
+              data={responseData}
+              keyField="id"                     // adjust if blobs use a different unique key
+              onSelectionChange={setSelectedBlobs}
+            />
+          )}
+
+          {resultType !== 'table' && resultType !== 'blobs' && (
+            <pre>{responseData}</pre>
+          )}
+        </div>
+      )}
+
+
     </div>
   );
 };
