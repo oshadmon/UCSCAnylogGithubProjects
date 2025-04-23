@@ -1,9 +1,10 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi import Body
 from pydantic import BaseModel
 from typing import Dict
 from parsers import parse_response
-from auth import supabase_signup, supabase_get_user, supabase_login, supabase_logout, supabase_bookmark_node, supabase_get_bookmarked_nodes, supabase_delete_bookmarked_node
+from auth import supabase_signup, supabase_get_user, supabase_login, supabase_logout, supabase_bookmark_node, supabase_get_bookmarked_nodes, supabase_delete_bookmarked_node, supabase_update_bookmark_description
 from helpers import make_request, grab_network_nodes, monitor_network, make_policy, send_json_data
 
 app = FastAPI()
@@ -18,6 +19,7 @@ app.add_middleware(
 )
 class Connection(BaseModel):
     conn: str
+
 
 class DBConnection(BaseModel):
     dbms: str
@@ -43,6 +45,11 @@ class AccessToken(BaseModel):
 class Policy(BaseModel):
     name: str  # Policy name
     data: Dict[str, str]  # Key-value pairs
+
+class BookmarkUpdateRequest(BaseModel):
+    token: AccessToken
+    node: str
+    description: str
 
 @app.get("/")
 def get_status():
@@ -160,7 +167,7 @@ def get_bookmarked_nodes(token: AccessToken):
     resp = supabase_get_bookmarked_nodes(user_id)
     print("Bookmarked nodes response:", resp)
     return {"data": resp.data}
-    
+
 @app.post("/delete-bookmarked-node/")
 def delete_bookmarked_node(token: AccessToken, conn: Connection):
     """
@@ -176,3 +183,13 @@ def delete_bookmarked_node(token: AccessToken, conn: Connection):
     print("Delete bookmark response:", response)
 
     return {"data": response.data}
+
+@app.post("/update-bookmark-description/")
+def update_bookmark_description(request: BookmarkUpdateRequest):
+    user = supabase_get_user(request.token.jwt)
+    user_id = user.user.id
+
+    response = supabase_update_bookmark_description(user_id, request.node, request.description)
+    return {"data": response.data}
+
+

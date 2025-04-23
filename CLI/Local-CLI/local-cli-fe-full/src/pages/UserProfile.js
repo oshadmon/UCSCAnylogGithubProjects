@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getUser, logout } from '../services/auth'; // Adjust path as needed
 import { getBookmarks, deleteBookmarkedNode } from '../services/api';
+import { updateBookmarkDescription } from '../services/api';
 import BookmarkTable from '../components/BookmarkTable';
 
 // import '../styles/UserProfile.css';
@@ -99,6 +100,19 @@ const UserProfile = () => {
             alert('Failed to delete bookmark');
         }
     };
+    const handleUpdateDescription = async (node, description) => {
+        const jwt = localStorage.getItem('accessToken');
+        try {
+          await updateBookmarkDescription({ jwt, node, description });
+          setBookmarks((prev) =>
+            prev.map((b) => (b.node === node ? { ...b, description } : b))
+          );
+        } catch (err) {
+          console.error('Failed to update description:', err);
+          alert('Error updating description');
+        }
+    };
+    
     
 
     return (
@@ -137,7 +151,11 @@ const UserProfile = () => {
                 ) : bookmarks.length === 0 ? (
                     <div>No bookmarks yet.</div>
                 ) : (
-                    <BookmarkTable bookmarks={bookmarks} onDelete={handleDeleteBookmark} />
+                    <BookmarkTable
+                        data={bookmarks}
+                        onDelete={handleDeleteBookmark}
+                        onUpdateDescription={handleUpdateDescription}/>
+
 
                 )}
             </div>

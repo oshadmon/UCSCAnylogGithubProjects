@@ -91,6 +91,17 @@ def supabase_delete_bookmarked_node(id, node):
     )
     return response
 
+def supabase_update_bookmark_description(id, node, description):
+    response = (
+        supabase
+        .table("bookmarks")
+        .update({"description": description})
+        .eq("user_id", id)
+        .eq("node", node)
+        .execute()
+    )
+    return response
+
 
 # resp = supabase_signup("ppurathe@ucsc.edu", "pass1234", "peter", "pp")
 
