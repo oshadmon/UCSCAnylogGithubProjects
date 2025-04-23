@@ -95,6 +95,8 @@ def send_command(conn: Connection, command: Command):
     print("structured_data", structured_data)
     return structured_data
 
+
+
 @app.post("/get-network-nodes/")
 def get_connected_nodes(conn: Connection):
     connected_nodes = grab_network_nodes(conn.conn)
@@ -160,3 +162,32 @@ def get_bookmarked_nodes(token: AccessToken):
     resp = supabase_get_bookmarked_nodes(user_id)
     print("Bookmarked nodes response:", resp)
     return {"data": resp.data}
+
+
+
+@app.post("/view-blobs/")
+def view_blobs(conn: Connection, blobs: dict):
+    print("conn", conn.conn)
+    # print("blobs", blobs['blobs'])
+    
+    
+    for blob in blobs['blobs']:
+        print("blob", blob)
+        # Here you would implement the logic to view the blob
+
+        ip_port = f'{blob['ip']}:{blob['port']}'
+        operator_dbms = blob['dbms_name']
+        operator_table = blob['table_name']
+        operator_file = blob['file']
+        blobs_dir = "/app/AnyLog-Network/data/blobs/"
+        print("IP:Port", ip_port)
+
+        # cmd = f'run client ({ip_port}) file get !!blockchain_file !blockchain_file'
+
+        cmd = f"file get (dbms = blobs_{operator_dbms} and table = {operator_table} and id = {operator_file}) {blobs_dir}{operator_dbms}.{operator_table}.{operator_file}"  # Add file full path and name for the destination on THIS MACHINE
+        raw_response = make_request(conn.conn, "POST", cmd)
+
+        print("raw_response", raw_response)
+
+
+    return {"data": "This endpoint is not implemented yet."}
