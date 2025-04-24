@@ -8,7 +8,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PATH="$VIRTUAL_ENV/bin:$PATH" \
 #     NODE_OPTIONS=--openssl-legacy-provider \
     CLI_IP=0.0.0.0 \
-    CLI_PORT=8000
+    CLI_PORT=3000
 
 # Set working directory + copy files
 WORKDIR /app
@@ -33,7 +33,7 @@ RUN $VIRTUAL_ENV/bin/pip install --upgrade dist/*.whl
 
 # # Install frontend dependencies
 WORKDIR /app/CLI/Local-CLI/local-cli-frontend
-RUN npm install
+RUN npm install && npm run build
 
 FROM base AS deployment
 
@@ -43,7 +43,7 @@ RUN apt-get clean && \
     rm -rf /var/lib/apt/lists/* AnyLog-API build/ anylog_api.egg-info/
 
 EXPOSE ${CLI_PORT}
-CMD bash -c "uvicorn CLI.Local-CLI.local-cli-backend.main:app --host ${CLI_IP} --port ${CLI_PORT} & cd /app/CLI/Local-CLI/local-cli-frontend && npm start"
+CMD bash -c "$VIRTUAL_ENV/bin/uvicorn CLI.Local-CLI.local-cli-backend.main:app --host ${CLI_IP} --port ${CLI_PORT} & cd /app/CLI/Local-CLI/local-cli-frontend && npm start"
 
 # Default command (can be overridden)
 # ENTRYPOINT ["bash"]
