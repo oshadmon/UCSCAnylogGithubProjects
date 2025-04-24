@@ -34,6 +34,13 @@ Before you begin, ensure you have the following installed:
     ```bash
     pip install -r reqs.txt
     ```
+
+    These might also come in handy:
+    ```bash
+    pip install python-dotenv psycopg2
+    pip install psycopg2-binary
+    ```
+
     Mainly uses the fastapi and requests libraries from python.
 
 4. Run the backend server:

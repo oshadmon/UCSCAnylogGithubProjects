@@ -1,12 +1,25 @@
 // src/components/NodePicker.js
 import React, { useState } from 'react';
-import { getConnectedNodes } from '../services/api'; // Adjust the import path as necessary
+import { getConnectedNodes, bookmarkNode } from '../services/api'; // Adjust the import path as necessary
 import '../styles/NodePicker.css'; // Optional: create a CSS file for node picker styling
+import { isLoggedIn } from '../services/auth';
+import { useEffect } from 'react';
 
 const NodePicker = ({ nodes, selectedNode, onAddNode, onSelectNode }) => {
   const [newNode, setNewNode] = useState('');
   const [error, setError] = useState(null);
   const [local, setLocal] = useState(false);
+  const [bookmarkMsg, setBookmarkMsg] = useState(null);
+
+  useEffect(() => {
+    if (!bookmarkMsg) return;
+
+    const timer = setTimeout(() => {
+      setBookmarkMsg(null);
+    }, 5000); // 3000ms = 3s
+
+    return () => clearTimeout(timer);
+  }, [bookmarkMsg]);
 
 
   const handleAdd = () => {
@@ -23,7 +36,7 @@ const NodePicker = ({ nodes, selectedNode, onAddNode, onSelectNode }) => {
     setError(null);
 
     try {
-      console.log("Selected Node is thi:", selectedNode);
+      console.log("Selected Node is this:", selectedNode);
       const fetchedNodes = await getConnectedNodes({ selectedNode });
       for (const node of fetchedNodes.data) {
         console.log(node);
@@ -54,6 +67,26 @@ const NodePicker = ({ nodes, selectedNode, onAddNode, onSelectNode }) => {
     onSelectNode(makeLocal(selectedNode, isLocal));
   }
 
+  const handleBookmark = async () => {
+    if (!selectedNode) {
+      setBookmarkMsg('No node selected to bookmark.');
+      return;
+    }
+    setError(null);
+    setBookmarkMsg(null);
+
+    try {
+      if (isLoggedIn()) {
+        const jwt = localStorage.getItem('accessToken');
+        await bookmarkNode({ node: selectedNode, jwt });
+        setBookmarkMsg(`Bookmarked ${selectedNode}!`);
+      }
+    } catch (err) {
+      console.error('Bookmark failed:', err);
+      setError('Could not bookmark node. Try again.');
+    }
+  };
+
 
   return (
     <div className="node-picker-container">
@@ -81,14 +114,27 @@ const NodePicker = ({ nodes, selectedNode, onAddNode, onSelectNode }) => {
       <button className="node-picker-btn" onClick={handleAddConnectedNodes}>
         Add Connected Nodes
       </button>
+      <button className="node-picker-btn" onClick={handleBookmark}>
+        Bookmark
+      </button>
       <label className="local-label">
         <input type="checkbox" checked={local} onChange={handleLocalChange} />
         Local
       </label>
-      {error && <div className="error">{error}</div>}
+      {bookmarkMsg && (
+        <div className="bookmark-msg" style={{ color: 'red', marginTop: '0.5rem', marginBlockStart: '0.5rem' }}>
+          {bookmarkMsg}
+        </div>
+      )}
+      {error && (
+        <div className="error" style={{ color: 'red', marginTop: '0.5rem' }}>
+          {error}
+        </div>
+      )}
     </div>
   );
 };
+
 
 export default NodePicker;
 

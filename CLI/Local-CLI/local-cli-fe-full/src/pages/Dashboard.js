@@ -48,7 +48,7 @@ const Dashboard = () => {
             <Route path="userprofile" element={<UserProfile node = {selectedNode}/>} />
             {/* <Route path="presets" element={<Presets />} /> */}
             {/* Default view */}
-            <Route path="*" element={<Client />} />
+            <Route path="*" element={<Client node = {selectedNode}/>} />
           </Routes>
         </div>
       </div>

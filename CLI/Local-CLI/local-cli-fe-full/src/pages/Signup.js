@@ -28,7 +28,7 @@ const Signup = () => {
       // Navigate to the dashboard or login page after a successful signup.
       if (isLoggedIn()) {
         navigate('/dashboard/client');
-        window.location.reload();
+        // window.location.reload();
       } else {
         setError(result.message || "Signup failed.");
       }
