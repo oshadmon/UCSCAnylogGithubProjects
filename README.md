@@ -97,3 +97,15 @@ Set up a node using the docker-compose and use the IP and port from the docker c
 OR 
 
 Use `23.239.12.151:32349` as the IP and port to connect to a hosted node.
+
+
+## Docker 
+1. To build -- currently pushed so no need build unless changing version 
+```shell
+docker build . -t oshadmon/gui:latest
+```
+
+2. run 
+```shell
+docker run -it -d --network host --rm oshadmon/gui:latest
+``` 
