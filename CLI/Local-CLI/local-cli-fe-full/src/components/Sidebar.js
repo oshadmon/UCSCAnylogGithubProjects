@@ -10,6 +10,7 @@ const Sidebar = () => {
       <NavLink to="monitor" className={({ isActive }) => isActive ? 'active' : ''}>Monitor</NavLink>
       <NavLink to="policies" className={({ isActive }) => isActive ? 'active' : ''}>Policies</NavLink>
       <NavLink to="adddata" className={({ isActive }) => isActive ? 'active' : ''}>Add Data</NavLink>
+      <NavLink to="viewfiles" className={({ isActive }) => isActive ? 'active' : ''}>View Files</NavLink>
       {/* <NavLink to="presets" className={({ isActive }) => isActive ? 'active' : ''}>Presets</NavLink> */}
     </nav>
   );

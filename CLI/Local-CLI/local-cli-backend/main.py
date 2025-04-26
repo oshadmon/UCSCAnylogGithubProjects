@@ -96,7 +96,6 @@ def send_command(conn: Connection, command: Command):
     return structured_data
 
 
-
 @app.post("/get-network-nodes/")
 def get_connected_nodes(conn: Connection):
     connected_nodes = grab_network_nodes(conn.conn)
@@ -179,15 +178,26 @@ def view_blobs(conn: Connection, blobs: dict):
         operator_dbms = blob['dbms_name']
         operator_table = blob['table_name']
         operator_file = blob['file']
-        blobs_dir = "/app/AnyLog-Network/data/blobs/"
+        blobs_dir = "/app/Remote-CLI/djangoProject/static/blobs/current/"
         print("IP:Port", ip_port)
 
         # cmd = f'run client ({ip_port}) file get !!blockchain_file !blockchain_file'
+        # cmd = f'run client ({ip_port}) file get !!blobs_dir/{operator_file} !blobs_dir/{operator_file}'
 
-        cmd = f"file get (dbms = blobs_{operator_dbms} and table = {operator_table} and id = {operator_file}) {blobs_dir}{operator_dbms}.{operator_table}.{operator_file}"  # Add file full path and name for the destination on THIS MACHINE
+        cmd = f"run client ({ip_port}) file get (dbms = blobs_{operator_dbms} and table = {operator_table} and id = {operator_file}) {blobs_dir}{operator_dbms}.{operator_table}.{operator_file}"  # Add file full path and name for the destination on THIS MACHINE
         raw_response = make_request(conn.conn, "POST", cmd)
 
         print("raw_response", raw_response)
 
 
     return {"data": "This endpoint is not implemented yet."}
+
+
+
+# streaming
+# info = (dest_type = rest) 
+# for streaming — views.py method stream_process
+# uses post
+# cmd: source_url = f"http://{ip}:{port}/?User-Agent=AnyLog/1.23?command=file retrieve where dbms={dbms} and table={table} and id={file} and stream = true"
+
+# build image or video or audio (aka any file) viewer
