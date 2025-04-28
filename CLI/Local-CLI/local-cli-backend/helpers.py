@@ -105,7 +105,7 @@ def make_policy(conn:str, policy: Policy):
     # Retrieve the policy from the blockchain (POST)
     blockchain_get_command = f"blockchain get {policy.name}"
     print(f"Fetching Policy from Blockchain: {blockchain_get_command}")
-    blockchain_response = make_request(conn, "GET", blockchain_get_command)
+    blockchain_response = make_request(conn, "POST", blockchain_get_command)
     print(f"Blockchain Policy Response: {blockchain_response}")
 
     return blockchain_response

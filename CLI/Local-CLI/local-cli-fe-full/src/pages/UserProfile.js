@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getUser, logout } from '../services/auth'; // Adjust path as needed
-import { getBookmarks, deleteBookmarkedNode } from '../services/api';
-import { updateBookmarkDescription } from '../services/api';
-import BookmarkTable from '../components/BookmarkTable';
-
+import { getBookmarks } from '../services/api';
+import DataTable from '../components/DataTable'; // Adjust path as needed
 // import '../styles/UserProfile.css';
 
 const UserProfile = () => {
@@ -90,30 +88,6 @@ const UserProfile = () => {
             </div>
         );
     }
-    const handleDeleteBookmark = async (node) => {
-        const jwt = localStorage.getItem('accessToken');
-        try {
-            await deleteBookmarkedNode({ jwt, node });
-            setBookmarks((prev) => prev.filter((b) => b.node !== node));
-        } catch (err) {
-            console.error('Error deleting bookmark:', err);
-            alert('Failed to delete bookmark');
-        }
-    };
-    const handleUpdateDescription = async (node, description) => {
-        const jwt = localStorage.getItem('accessToken');
-        try {
-          await updateBookmarkDescription({ jwt, node, description });
-          setBookmarks((prev) =>
-            prev.map((b) => (b.node === node ? { ...b, description } : b))
-          );
-        } catch (err) {
-          console.error('Failed to update description:', err);
-          alert('Error updating description');
-        }
-    };
-    
-    
 
     return (
         <div className="userprofile-container">
@@ -151,12 +125,7 @@ const UserProfile = () => {
                 ) : bookmarks.length === 0 ? (
                     <div>No bookmarks yet.</div>
                 ) : (
-                    <BookmarkTable
-                        data={bookmarks}
-                        onDelete={handleDeleteBookmark}
-                        onUpdateDescription={handleUpdateDescription}/>
-
-
+                    <DataTable data={bookmarks} />
                 )}
             </div>
         </div>
