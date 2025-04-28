@@ -1,4 +1,4 @@
-import psycopg2
+# import psycopg2
 from dotenv import load_dotenv
 import os
 from supabase import create_client, Client
@@ -78,28 +78,6 @@ def supabase_bookmark_node(id, node):
 
 def supabase_get_bookmarked_nodes(id):
     response = supabase.table("bookmarks").select("*").eq("user_id", id).execute()
-    return response
-
-def supabase_delete_bookmarked_node(id, node):
-    response = (
-        supabase
-        .table("bookmarks")
-        .delete()
-        .eq("user_id", id)
-        .eq("node", node)
-        .execute()
-    )
-    return response
-
-def supabase_update_bookmark_description(id, node, description):
-    response = (
-        supabase
-        .table("bookmarks")
-        .update({"description": description})
-        .eq("user_id", id)
-        .eq("node", node)
-        .execute()
-    )
     return response
 
 
