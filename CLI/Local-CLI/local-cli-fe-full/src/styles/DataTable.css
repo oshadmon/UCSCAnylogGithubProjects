@@ -1,7 +1,9 @@
 
 .data-table {
     width: 100%;
+    max-width: 100%;
     border-collapse: collapse;
+    table-layout: fixed;
   }
   
   .data-table th,
@@ -9,6 +11,8 @@
     border: 1px solid #ccc;
     text-align: left;
     padding: 8px;
+    word-break: break-word;   /* ← allow long content to wrap within its cell */
+    /* overflow-wrap: anywhere; */
   }
   
   .data-table th {

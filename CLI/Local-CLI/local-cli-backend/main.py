@@ -1,10 +1,9 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi import Body
 from pydantic import BaseModel
 from typing import Dict
 from parsers import parse_response
-from auth import supabase_signup, supabase_get_user, supabase_login, supabase_logout, supabase_bookmark_node, supabase_get_bookmarked_nodes, supabase_delete_bookmarked_node, supabase_update_bookmark_description
+from auth import supabase_signup, supabase_get_user, supabase_login, supabase_logout, supabase_bookmark_node, supabase_get_bookmarked_nodes
 from helpers import make_request, grab_network_nodes, monitor_network, make_policy, send_json_data
 
 app = FastAPI()
@@ -19,7 +18,6 @@ app.add_middleware(
 )
 class Connection(BaseModel):
     conn: str
-
 
 class DBConnection(BaseModel):
     dbms: str
@@ -45,11 +43,6 @@ class AccessToken(BaseModel):
 class Policy(BaseModel):
     name: str  # Policy name
     data: Dict[str, str]  # Key-value pairs
-
-class BookmarkUpdateRequest(BaseModel):
-    token: AccessToken
-    node: str
-    description: str
 
 @app.get("/")
 def get_status():
@@ -101,6 +94,7 @@ def send_command(conn: Connection, command: Command):
     structured_data = parse_response(raw_response)
     print("structured_data", structured_data)
     return structured_data
+
 
 @app.post("/get-network-nodes/")
 def get_connected_nodes(conn: Connection):
@@ -168,28 +162,42 @@ def get_bookmarked_nodes(token: AccessToken):
     print("Bookmarked nodes response:", resp)
     return {"data": resp.data}
 
-@app.post("/delete-bookmarked-node/")
-def delete_bookmarked_node(token: AccessToken, conn: Connection):
-    """
-    Delete a bookmarked node for the authenticated user.
-    """
-    print("token: ", token.jwt)
-    print("node: ", conn.conn)
-
-    user = supabase_get_user(token.jwt)
-    user_id = user.user.id
-
-    response = supabase_delete_bookmarked_node(user_id, conn.conn)
-    print("Delete bookmark response:", response)
-
-    return {"data": response.data}
-
-@app.post("/update-bookmark-description/")
-def update_bookmark_description(request: BookmarkUpdateRequest):
-    user = supabase_get_user(request.token.jwt)
-    user_id = user.user.id
-
-    response = supabase_update_bookmark_description(user_id, request.node, request.description)
-    return {"data": response.data}
 
 
+@app.post("/view-blobs/")
+def view_blobs(conn: Connection, blobs: dict):
+    print("conn", conn.conn)
+    # print("blobs", blobs['blobs'])
+    
+    
+    for blob in blobs['blobs']:
+        print("blob", blob)
+        # Here you would implement the logic to view the blob
+
+        ip_port = f'{blob['ip']}:{blob['port']}'
+        operator_dbms = blob['dbms_name']
+        operator_table = blob['table_name']
+        operator_file = blob['file']
+        blobs_dir = "/app/Remote-CLI/djangoProject/static/blobs/current/"
+        print("IP:Port", ip_port)
+
+        # cmd = f'run client ({ip_port}) file get !!blockchain_file !blockchain_file'
+        # cmd = f'run client ({ip_port}) file get !!blobs_dir/{operator_file} !blobs_dir/{operator_file}'
+
+        cmd = f"run client ({ip_port}) file get (dbms = blobs_{operator_dbms} and table = {operator_table} and id = {operator_file}) {blobs_dir}{operator_dbms}.{operator_table}.{operator_file}"  # Add file full path and name for the destination on THIS MACHINE
+        raw_response = make_request(conn.conn, "POST", cmd)
+
+        print("raw_response", raw_response)
+
+
+    return {"data": "This endpoint is not implemented yet."}
+
+
+
+# streaming
+# info = (dest_type = rest) 
+# for streaming — views.py method stream_process
+# uses post
+# cmd: source_url = f"http://{ip}:{port}/?User-Agent=AnyLog/1.23?command=file retrieve where dbms={dbms} and table={table} and id={file} and stream = true"
+
+# build image or video or audio (aka any file) viewer
