@@ -1,3 +1,5 @@
+import os
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -174,11 +176,15 @@ def view_blobs(conn: Connection, blobs: dict):
         print("blob", blob)
         # Here you would implement the logic to view the blob
 
-        ip_port = f'{blob['ip']}:{blob['port']}'
+        ip_port = f"{blob['ip']}:{blob['port']}"
         operator_dbms = blob['dbms_name']
         operator_table = blob['table_name']
         operator_file = blob['file']
+        # blobs_dir = '/app/CLI/Local-CLI/local-cli-fe-full/public/static'
         blobs_dir = "/app/Remote-CLI/djangoProject/static/blobs/current/"
+        if not os.path.isdir(blobs_dir):
+            os.makedirs(blobs_dir)
+
         print("IP:Port", ip_port)
 
         # cmd = f'run client ({ip_port}) file get !!blockchain_file !blockchain_file'
