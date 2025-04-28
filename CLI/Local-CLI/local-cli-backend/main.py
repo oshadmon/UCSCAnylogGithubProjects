@@ -169,16 +169,18 @@ def view_blobs(conn: Connection, blobs: dict):
     print("conn", conn.conn)
     # print("blobs", blobs['blobs'])
     
-    
+    file_list = []
     for blob in blobs['blobs']:
         print("blob", blob)
         # Here you would implement the logic to view the blob
 
-        ip_port = f'{blob['ip']}:{blob['port']}'
+        ip_port = f"{blob['ip']}:{blob['port']}"
         operator_dbms = blob['dbms_name']
         operator_table = blob['table_name']
         operator_file = blob['file']
-        blobs_dir = "/app/Remote-CLI/djangoProject/static/blobs/current/"
+        file_list.append(operator_file)
+
+        blobs_dir = "CLI/Local-CLI/local-cli-fe-full/public/static/"
         print("IP:Port", ip_port)
 
         # cmd = f'run client ({ip_port}) file get !!blockchain_file !blockchain_file'
@@ -190,7 +192,7 @@ def view_blobs(conn: Connection, blobs: dict):
         print("raw_response", raw_response)
 
 
-    return {"data": "This endpoint is not implemented yet."}
+    return {"data": file_list}
 
 
 
@@ -201,3 +203,8 @@ def view_blobs(conn: Connection, blobs: dict):
 # cmd: source_url = f"http://{ip}:{port}/?User-Agent=AnyLog/1.23?command=file retrieve where dbms={dbms} and table={table} and id={file} and stream = true"
 
 # build image or video or audio (aka any file) viewer
+
+
+
+
+# http://45.33.110.211:31800
