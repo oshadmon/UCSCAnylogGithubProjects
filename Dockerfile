@@ -41,7 +41,8 @@ FROM base AS deployment
 # cleanup
 WORKDIR /app
 RUN apt-get clean && \
-    rm -rf /var/lib/apt/lists/* AnyLog-API build/ anylog_api.egg-info/
+    rm -rf /var/lib/apt/lists/* AnyLog-API build/ anylog_api.egg-info/ && \
+    mkdir -p CLI/Local-CLI/local-cli-fe-full/public/static
 
 EXPOSE ${CLI_PORT}
 CMD bash -c "$VIRTUAL_ENV/bin/uvicorn CLI.Local-CLI.local-cli-backend.main:app --host ${CLI_IP} --port ${CLI_PORT} & cd /app/CLI/Local-CLI/local-cli-fe-full && npm start"
