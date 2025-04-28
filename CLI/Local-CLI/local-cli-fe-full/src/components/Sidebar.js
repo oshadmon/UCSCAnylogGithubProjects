@@ -11,4 +11,9 @@ const Sidebar = () => {
       <NavLink to="policies" className={({ isActive }) => isActive ? 'active' : ''}>Policies</NavLink>
       <NavLink to="adddata" className={({ isActive }) => isActive ? 'active' : ''}>Add Data</NavLink>
       <NavLink to="viewfiles" className={({ isActive }) => isActive ? 'active' : ''}>View Files</NavLink>
-      {/* <NavLink to="presets" className={({ i
+      {/* <NavLink to="presets" className={({ isActive }) => isActive ? 'active' : ''}>Presets</NavLink> */}
+    </nav>
+  );
+};
+
+export default Sidebar;

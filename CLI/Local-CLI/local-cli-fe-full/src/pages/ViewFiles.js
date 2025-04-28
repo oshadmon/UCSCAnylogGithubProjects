@@ -4,12 +4,14 @@ import React, {useState} from 'react';
 import FileViewerAuto      from '../components/FileViewerAuto';
 import '../styles/ViewFiles.css';  // <-- import the new stylesheet
 
-const ViewFiles = () => {
+const BACKEND_URL = 'http://localhost:8000';
+
+const ViewFiles = ({files = null}) => {
   // const { fileId } = useParams();
   const [expandedFile, setExpandedFile] = useState(null);
 
   // List of your filenames in public/static/
-  const files = [
+  const dummyFiles = [
     'anylogLogo.png',
     // 'report.pdf',
     'flower.jpg',
@@ -18,11 +20,13 @@ const ViewFiles = () => {
     // …add as many as you like
   ];
 
+  const finalFiles = files || dummyFiles;
+
   return (
     <>
       <div className="view-files-grid">
-        {files.map((name, idx) => {
-          const url = `/static/${name}`;
+        {finalFiles.map((name, idx) => {
+          const url = `${BACKEND_URL}/static/${name}`;
           return (
             <div
               key={idx}
@@ -51,7 +55,7 @@ const ViewFiles = () => {
               ×
             </button>
             <FileViewerAuto
-              src={`/static/${expandedFile}`}
+              src={`${BACKEND_URL}/static/${expandedFile}`}
               style={{ maxWidth: '90vw', maxHeight: '90vh' }}
             />
           </div>

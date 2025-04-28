@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from typing import Dict
 from parsers import parse_response
@@ -16,6 +17,10 @@ app.add_middleware(
     allow_methods=["*"],  # Allows GET, POST, PUT, DELETE, etc.
     allow_headers=["*"],  # Allows all headers
 )
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+
 class Connection(BaseModel):
     conn: str
 
@@ -180,7 +185,7 @@ def view_blobs(conn: Connection, blobs: dict):
         operator_file = blob['file']
         file_list.append(operator_file)
 
-        blobs_dir = "CLI/Local-CLI/local-cli-fe-full/public/static/"
+        blobs_dir = "/app/Remote-CLI/djangoProject/static/blobs/current/"
         print("IP:Port", ip_port)
 
         # cmd = f'run client ({ip_port}) file get !!blockchain_file !blockchain_file'
@@ -200,11 +205,4 @@ def view_blobs(conn: Connection, blobs: dict):
 # info = (dest_type = rest) 
 # for streaming — views.py method stream_process
 # uses post
-# cmd: source_url = f"http://{ip}:{port}/?User-Agent=AnyLog/1.23?command=file retrieve where dbms={dbms} and table={table} and id={file} and stream = true"
-
-# build image or video or audio (aka any file) viewer
-
-
-
-
-# http://45.33.110.211:31800
+# cmd: source_url = f"http://{ip}:{port}/?User-Agent=AnyLog/1.23?command=file retrieve where dbms={dbm
