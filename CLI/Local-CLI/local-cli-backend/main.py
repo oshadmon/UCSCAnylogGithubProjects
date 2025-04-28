@@ -185,7 +185,8 @@ def view_blobs(conn: Connection, blobs: dict):
         operator_file = blob['file']
         file_list.append(operator_file)
 
-        blobs_dir = "/app/Remote-CLI/djangoProject/static/blobs/current/"
+        # blobs_dir = "/app/Remote-CLI/djangoProject/static/blobs/current/"
+        blobs_dir = "/app/CLI/Local-CLI/local-cli-backend/static/"
         print("IP:Port", ip_port)
 
         # cmd = f'run client ({ip_port}) file get !!blockchain_file !blockchain_file'
@@ -205,4 +206,11 @@ def view_blobs(conn: Connection, blobs: dict):
 # info = (dest_type = rest) 
 # for streaming — views.py method stream_process
 # uses post
-# cmd: source_url = f"http://{ip}:{port}/?User-Agent=AnyLog/1.23?command=file retrieve where dbms={dbm
+# cmd: source_url = f"http://{ip}:{port}/?User-Agent=AnyLog/1.23?command=file retrieve where dbms={dbms} and table={table} and id={file} and stream = true"
+
+# build image or video or audio (aka any file) viewer
+
+
+
+
+# http://45.33.110.211:31800
