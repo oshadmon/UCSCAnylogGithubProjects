@@ -34,7 +34,7 @@ RUN $VIRTUAL_ENV/bin/pip install --upgrade dist/*.whl
 
 # # Install frontend dependencies
 WORKDIR /app/CLI/Local-CLI/local-cli-fe-full
-RUN npm install && npm run
+RUN npm install && npm run build
 
 FROM base AS deployment
 
