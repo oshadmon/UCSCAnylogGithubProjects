@@ -45,7 +45,9 @@ RUN apt-get clean && \
     mkdir -p CLI/Local-CLI/local-cli-fe-full/public/static
 
 EXPOSE ${CLI_PORT}
-CMD bash -c "$VIRTUAL_ENV/bin/uvicorn CLI.Local-CLI.local-cli-backend.main:app --host ${CLI_IP} --port ${CLI_PORT} & cd /app/CLI/Local-CLI/local-cli-fe-full && npm start"
+# CMD bash -c "$VIRTUAL_ENV/bin/uvicorn CLI.Local-CLI.local-cli-backend.main:app --host ${CLI_IP} --port ${CLI_PORT} & cd /app/CLI/Local-CLI/local-cli-fe-full && npm start"
+CMD bash -c "$VIRTUAL_ENV/bin/uvicorn CLI.Local-CLI.local-cli-backend.main:app --host ${CLI_IP} --port ${CLI_PORT} & cd /app/CLI/Local-CLI/local-cli-fe-full && HOST=0.0.0.0 PORT=3001 npm start"
+
 
 # Default command (can be overridden)
 # ENTRYPOINT ["bash"]
