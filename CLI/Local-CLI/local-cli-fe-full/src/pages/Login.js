@@ -13,16 +13,8 @@ const Login = () => {
     e.preventDefault();
     setError(null);
     try {
-
-      const result = await login({email, password});
-      console.log("login result:", result);
-
-      const token = localStorage.getItem('authToken');
-      console.log("Stored token after login:", token);
-
       const result = await login({ email, password });
       if (isLoggedIn()) {
-        console.log("User is logged in");
         navigate('/dashboard/client');
         window.location.reload();
       } else {
