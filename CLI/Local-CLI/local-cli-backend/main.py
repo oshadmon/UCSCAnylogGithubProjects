@@ -9,6 +9,12 @@ from parsers import parse_response
 from auth import supabase_signup, supabase_get_user, supabase_login, supabase_logout, supabase_bookmark_node, supabase_get_bookmarked_nodes
 from helpers import make_request, grab_network_nodes, monitor_network, make_policy, send_json_data
 
+# blobs dir
+ROOT_PATH = os.path.dirname(__file__)
+BLOBS_DIR = os.path.join(ROOT_PATH, 'static')
+if not os.path.isdir(BLOBS_DIR):
+    os.makedirs(BLOBS_DIR)
+
 app = FastAPI()
 
 # Allow CORS (React frontend -> FastAPI backend)
@@ -20,7 +26,7 @@ app.add_middleware(
     allow_headers=["*"],  # Allows all headers
 )
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/static", StaticFiles(directory=BLOBS_DIR), name="static")
 
 class Connection(BaseModel):
     conn: str
@@ -187,10 +193,6 @@ def view_blobs(conn: Connection, blobs: dict):
 
         # blobs_dir = '/app/CLI/Local-CLI/local-cli-fe-full/public/static'
         # blobs_dir = "/app/Remote-CLI/djangoProject/static/blobs/current/"
-        blobs_dir = "/app/CLI/Local-CLI/local-cli-backend/static/"
-        if not os.path.isdir(blobs_dir):
-            os.makedirs(blobs_dir)
-
         file_list.append(operator_file)
 
         # blobs_dir = "/app/Remote-CLI/djangoProject/static/blobs/current/"
@@ -199,7 +201,7 @@ def view_blobs(conn: Connection, blobs: dict):
         # cmd = f'run client ({ip_port}) file get !!blockchain_file !blockchain_file'
         # cmd = f'run client ({ip_port}) file get !!blobs_dir/{operator_file} !blobs_dir/{operator_file}'
 
-        cmd = f"run client ({ip_port}) file get (dbms = blobs_{operator_dbms} and table = {operator_table} and id = {operator_file}) {blobs_dir}{operator_dbms}.{operator_table}.{operator_file}"  # Add file full path and name for the destination on THIS MACHINE
+        cmd = f"run client ({ip_port}) file get (dbms = blobs_{operator_dbms} and table = {operator_table} and id = {operator_file}) {BLOBS_DIR}{operator_dbms}.{operator_table}.{operator_file}"  # Add file full path and name for the destination on THIS MACHINE
         raw_response = make_request(conn.conn, "POST", cmd)
 
         print("raw_response", raw_response)
