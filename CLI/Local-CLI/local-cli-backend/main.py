@@ -14,10 +14,11 @@ app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # Change this to your React app's URL for security
-    allow_credentials=True,
+    allow_credentials=False,  # Set to True only when you have a specific domain
     allow_methods=["*"],  # Allows GET, POST, PUT, DELETE, etc.
     allow_headers=["*"],  # Allows all headers
 )
+
 class Connection(BaseModel):
     conn: str
 
