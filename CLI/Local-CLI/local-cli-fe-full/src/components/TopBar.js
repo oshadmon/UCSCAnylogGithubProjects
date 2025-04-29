@@ -1,7 +1,7 @@
 // src/components/TopBar.js
 import React from 'react';
 import '../styles/TopBar.css';
-import logo from '../assets/logo.png'; // Adjust the path as necessary
+import logo from '../assets/logo.png';
 import NodePicker from './NodePicker.js';
 import { NavLink } from 'react-router-dom';
 

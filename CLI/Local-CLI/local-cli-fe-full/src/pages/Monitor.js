@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import DataTable from '../components/DataTable';
 import { monitor } from '../services/api'; // Ensure your API is set up correctly
-// import '../styles/Monitor.css';
+import '../styles/Monitor.css';
 
 const Monitor = ({ node }) => {
   console.log("Monitor node: ", node);
@@ -91,12 +91,12 @@ const Monitor = ({ node }) => {
   };
 
   return (
-    <div>
+    <div className="monitor-container">
       <h2>Monitor Section</h2>
       <div style={{ marginBottom: '10px' }}>
-      <p>
-        <strong>Connected Node:</strong> {node}
-      </p>
+        <p>
+          <strong>Connected Node:</strong> {node}
+        </p>
         <label htmlFor="rerunRate">Rerun Rate (seconds): </label>
         <input
           id="rerunRate"
