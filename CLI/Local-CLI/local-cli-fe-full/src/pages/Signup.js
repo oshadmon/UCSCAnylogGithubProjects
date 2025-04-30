@@ -15,7 +15,6 @@ const Signup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
-
     if (password !== confirmPassword) {
       setError("Passwords do not match.");
       return;
@@ -25,7 +24,6 @@ const Signup = () => {
       console.log("Signing up with:", { email, firstName, lastName, password });
       const result = await signup({ email, password, firstName, lastName });
       console.log("Signup result:", result);
-      // Navigate to the dashboard or login page after a successful signup.
       if (isLoggedIn()) {
         navigate('/dashboard/client');
         // window.location.reload();
@@ -38,60 +36,63 @@ const Signup = () => {
   };
 
   return (
-    <div className="login-container">
-      <h2>Create an Account</h2>
-      <form onSubmit={handleSubmit} className="login-form">
-        <div className="form-group">
-          <label>First Name:</label>
-          <input
-            type="text"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label>Last Name:</label>
-          <input
-            type="text"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label>Email:</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label>Password:</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label>Confirm Password:</label>
-          <input
-            type="password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            required
-          />
-        </div>
-        {error && <div className="error">{error}</div>}
-        <button type="submit">Sign Up</button>
-        <p style={{ textAlign: 'center', marginTop: '10px' }}>
-          Already have an account? <Link to="/login">Login here</Link>.
-        </p>
-      </form>
+    <div className="modern-login-page">
+      <div className="modern-login-box">
+        <h2 className="signup-brand">Create Account</h2>
+        <p className="signup-subtitle">Sign up to get started with Anylog</p>
+        <form onSubmit={handleSubmit} className="modern-login-form">
+          <div className="form-group with-icon">
+            <input
+              type="text"
+              placeholder="First Name"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              required
+            />
+          </div>
+          <div className="form-group with-icon">
+            <input
+              type="text"
+              placeholder="Last Name"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              required
+            />
+          </div>
+          <div className="form-group with-icon">
+            <input
+              type="email"
+              placeholder="Your Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+          <div className="form-group with-icon">
+            <input
+              type="password"
+              placeholder="Create Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+          <div className="form-group with-icon">
+            <input
+              type="password"
+              placeholder="Confirm Password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+            />
+          </div>
+          {error && <div className="error">{error}</div>}
+          <button type="submit" className="login-submit">Sign up</button>
+          <div className="login-links">
+            <span>Already have an account? <Link to="/login">Login</Link></span>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };
