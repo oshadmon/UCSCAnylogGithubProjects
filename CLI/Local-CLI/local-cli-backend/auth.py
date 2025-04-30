@@ -3,11 +3,12 @@ from dotenv import load_dotenv
 import os
 from supabase import create_client, Client
 
+PRESET_PARAMS = os.environ
+
 # Load environment variables from .env
 load_dotenv()
-
-url: str = os.environ.get("SUPABASE_URL")
-key: str = os.environ.get("SUPABASE_KEY")
+url:str = PRESET_PARAMS.get("SUPABASE_URL") if 'SUPABASE_URL' in PRESET_PARAMS else os.environ.get('SUPABASE_URL')
+key:str = PRESET_PARAMS.get("SUPABASE_KEY") if 'SUPABASE_KEY' in PRESET_PARAMS else os.environ.get("SUPABASE_KEY")
 supabase: Client = create_client(url, key)
 
 
