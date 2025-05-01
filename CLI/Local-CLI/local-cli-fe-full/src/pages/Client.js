@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import DataTable from '../components/DataTable'; // Adjust path as needed
 import BlobsTable from '../components/BlobsTable'; // Adjust path as needed
-import { sendCommand } from '../services/api'; // Adjust path as needed
+import { sendCommand, viewBlobs } from '../services/api'; // Adjust path as needed
 import '../styles/Client.css'; // Optional: create client-specific CSS
 import { useEffect } from 'react';
 
@@ -66,6 +66,40 @@ const Client = ({ node }) => {
           )}`
         );
       }
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleViewBlobs = async () => {
+    if (selectedBlobs.length === 0) {
+      return alert('Please select one or more blobs first.');
+    }
+    setLoading(true);
+    setError(null);
+
+    try {
+      // Build a comma-separated list of IDs (adjust if your blobs use a different key)
+      const blobs = {blobs: selectedBlobs}
+      // console.log('Fetching blobs:', blobs);
+      const result = await viewBlobs({
+        connectInfo: node,
+        blobs: blobs,
+      });
+
+      console.log('Result:', result);
+
+      // // Reuse your existing state machinery to display the new result
+      // setResultType(result.type);
+      // setResponseData(result.type === 'table' || result.type === 'blobs'
+      //   ? result.data
+      //   : JSON.stringify(result.data, null, 2)
+      // );
+      // if (result.type === 'blobs') {
+      //   setSelectedBlobs([]); // optionally clear selection if you want
+      // }
     } catch (err) {
       setError(err.message);
     } finally {
@@ -146,13 +180,20 @@ const Client = ({ node }) => {
           <h3>Selected Blobs:</h3>
           {selectedBlobs.length > 0 ? (
             <ul>
-              {selectedBlobs.map((blob, index) => (
-                <li key={index}>{JSON.stringify(blob)}</li>
+              {selectedBlobs.map((blob, i) => (
+                <li key={i}>{JSON.stringify(blob)}</li>
               ))}
             </ul>
           ) : (
             <p>No blobs selected.</p>
           )}
+          <button
+            onClick={handleViewBlobs}
+            disabled={selectedBlobs.length === 0 || loading}
+            className="view-blobs-button"
+          >
+            {loading ? 'Loading...' : 'View Blobs'}
+          </button>
         </div>
       )}
 

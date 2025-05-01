@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from fastapi import Body
 from pydantic import BaseModel
 from typing import Dict
@@ -17,6 +18,10 @@ app.add_middleware(
     allow_methods=["*"],  # Allows GET, POST, PUT, DELETE, etc.
     allow_headers=["*"],  # Allows all headers
 )
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+
 class Connection(BaseModel):
     conn: str
 
@@ -101,6 +106,7 @@ def send_command(conn: Connection, command: Command):
     structured_data = parse_response(raw_response)
     print("structured_data", structured_data)
     return structured_data
+
 
 @app.post("/get-network-nodes/")
 def get_connected_nodes(conn: Connection):
@@ -193,3 +199,52 @@ def update_bookmark_description(request: BookmarkUpdateRequest):
     return {"data": response.data}
 
 
+
+
+
+
+@app.post("/view-blobs/")
+def view_blobs(conn: Connection, blobs: dict):
+    print("conn", conn.conn)
+    # print("blobs", blobs['blobs'])
+    
+    file_list = []
+    for blob in blobs['blobs']:
+        print("blob", blob)
+        # Here you would implement the logic to view the blob
+
+        ip_port = f"{blob['ip']}:{blob['port']}"
+        operator_dbms = blob['dbms_name']
+        operator_table = blob['table_name']
+        operator_file = blob['file']
+        file_list.append(operator_file)
+
+        # blobs_dir = "/app/Remote-CLI/djangoProject/static/blobs/current/"
+        blobs_dir = "/app/CLI/Local-CLI/local-cli-backend/static/"
+        print("IP:Port", ip_port)
+
+        # cmd = f'run client ({ip_port}) file get !!blockchain_file !blockchain_file'
+        # cmd = f'run client ({ip_port}) file get !!blobs_dir/{operator_file} !blobs_dir/{operator_file}'
+
+        cmd = f"run client ({ip_port}) file get (dbms = blobs_{operator_dbms} and table = {operator_table} and id = {operator_file}) {blobs_dir}{operator_dbms}.{operator_table}.{operator_file}"  # Add file full path and name for the destination on THIS MACHINE
+        raw_response = make_request(conn.conn, "POST", cmd)
+
+        print("raw_response", raw_response)
+
+
+    return {"data": file_list}
+
+
+
+# streaming
+# info = (dest_type = rest) 
+# for streaming — views.py method stream_process
+# uses post
+# cmd: source_url = f"http://{ip}:{port}/?User-Agent=AnyLog/1.23?command=file retrieve where dbms={dbms} and table={table} and id={file} and stream = true"
+
+# build image or video or audio (aka any file) viewer
+
+
+
+
+# http://45.33.110.211:31800

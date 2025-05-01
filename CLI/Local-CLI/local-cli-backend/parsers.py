@@ -168,6 +168,9 @@ def parse_response(raw: str) -> dict:
         return {"type": "blobs", "data": raw['blobs']['Query']}
         # return {"type": "table", "data": raw['blobs']['Query']}
 
+    if isinstance(raw, bool):
+        return {"type": "string", "data": str(raw).lower()}
+
     if '|' in raw:
         print("FOUND TABLE")
         table_data = parse_table(raw)
