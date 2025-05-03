@@ -5,6 +5,7 @@ from fastapi import Body
 from pydantic import BaseModel
 from typing import Dict
 from parsers import parse_response
+import auth
 from auth import supabase_signup, supabase_get_user, supabase_login, supabase_logout, supabase_bookmark_node, supabase_get_bookmarked_nodes, supabase_delete_bookmarked_node, supabase_update_bookmark_description
 from helpers import make_request, grab_network_nodes, monitor_network, make_policy, send_json_data
 
@@ -55,6 +56,20 @@ class BookmarkUpdateRequest(BaseModel):
     token: AccessToken
     node: str
     description: str
+
+class PresetGroup(BaseModel):
+    group_name: str
+
+class PresetGroupID(BaseModel):
+    group_id: int
+
+class Preset(BaseModel):
+    group_id: int
+    command: str
+    type: str  # "GET" or "POST"
+    button: str
+
+
 
 @app.get("/")
 def get_status():
@@ -197,6 +212,98 @@ def update_bookmark_description(request: BookmarkUpdateRequest):
 
     response = supabase_update_bookmark_description(user_id, request.node, request.description)
     return {"data": response.data}
+
+
+@app.post("/add-preset-group/")
+def add_preset_group(token: AccessToken, group: PresetGroup):
+    """
+    Bookmark a node by sending a command to the AnyLog server.
+    """
+    print("token", token.jwt)
+    print("name", group.group_name)
+
+    user = supabase_get_user(token.jwt)
+
+    print(user.user.id)
+
+    user_id = user.user.id
+
+    resp = auth.supabase_add_preset_group(user_id, group.group_name)
+    print("presetgroup response:", resp)
+
+    return {"data": resp}
+
+@app.post("/get-preset-groups/")
+def get_preset_groups(token: AccessToken):
+    """
+    Get all bookmarked nodes for the authenticated user.
+    """
+    print("token: ", token)
+    user = supabase_get_user(token.jwt)
+    user_id = user.user.id
+    print("User ID:", user_id)
+    resp = auth.supabase_get_preset_groups(user_id)
+    print("Preset groups response:", resp)
+    return {"data": resp.data}
+
+
+@app.post("/add-preset/")
+def add_preset_to_group(token: AccessToken, preset: Preset):
+    """
+    Bookmark a node by sending a command to the AnyLog server.
+    """
+    print("token", token.jwt)
+    print("preset", preset)
+
+    user = supabase_get_user(token.jwt)
+
+    print(user.user.id)
+
+    user_id = user.user.id
+
+    resp = auth.supabase_add_preset_to_group(user_id, preset.group_id, preset.command, preset.type, preset.button)
+    print("preset response:", resp)
+
+    return {"data": resp}
+
+@app.post("/get-presets/")
+def get_presets(token: AccessToken, group_id: PresetGroupID):
+    """
+    Get all presets for a specific group for the authenticated user.
+    """
+    print("token: ", token.jwt)
+    print("group_id: ", group_id.group_id)
+
+    user = supabase_get_user(token.jwt)
+    user_id = user.user.id
+    print("User ID:", user_id)
+
+    resp = auth.supabase_get_presets_by_group(user_id, group_id.group_id)
+    print("Presets response:", resp)
+    
+    return {"data": resp.data}
+
+
+@app.post("/delete-preset-group/")
+def delete_preset_group(token: AccessToken, group_id: PresetGroupID):
+    """
+    Bookmark a node by sending a command to the AnyLog server.
+    """
+    print("token", token.jwt)
+    print("name", group_id.group_id)
+
+    user = supabase_get_user(token.jwt)
+
+    print(user.user.id)
+
+    user_id = user.user.id
+
+    resp = auth.supabase_delete_preset_group(user_id, group_id.group_id)
+    print("presetgroupdelete response:", resp)
+
+    return {"data": resp}
+
+
 
 
 
