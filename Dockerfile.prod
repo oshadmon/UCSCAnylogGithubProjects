@@ -46,7 +46,7 @@ ENV CLI_PORT=8000
 
 # Install serve for frontend
 RUN apt-get update && \
-    apt-get install -y nodejs npm && \
+    apt-get install -y nodejs npm xsel && \
     npm install -g serve && \
     rm -rf /var/lib/apt/lists/*
 

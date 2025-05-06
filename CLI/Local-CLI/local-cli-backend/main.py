@@ -15,13 +15,15 @@ from parsers import parse_response
 import auth
 from auth import supabase_signup, supabase_get_user, supabase_login, supabase_logout, supabase_bookmark_node, supabase_get_bookmarked_nodes, supabase_delete_bookmarked_node, supabase_update_bookmark_description
 from helpers import make_request, grab_network_nodes, monitor_network, make_policy, send_json_data
+import os
 
 app = FastAPI()
 
+FRONTEND_URL = os.getenv('FRONTEND_URL', '*')
 # Allow CORS (React frontend -> FastAPI backend)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Change this to your React app's URL for security
+    allow_origins=[FRONTEND_URL],  # Change this to your React app's URL for security
     allow_credentials=True,
     allow_methods=["*"],  # Allows GET, POST, PUT, DELETE, etc.
     allow_headers=["*"],  # Allows all headers
