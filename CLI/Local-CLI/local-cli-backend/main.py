@@ -1,9 +1,16 @@
+import os
+import sys
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+STATIC_DIR = os.path.join(BASE_DIR, 'static')
+sys.path.append(BASE_DIR)
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi import Body
 from pydantic import BaseModel
 from typing import Dict
+
 from parsers import parse_response
 import auth
 from auth import supabase_signup, supabase_get_user, supabase_login, supabase_logout, supabase_bookmark_node, supabase_get_bookmarked_nodes, supabase_delete_bookmarked_node, supabase_update_bookmark_description
@@ -20,7 +27,7 @@ app.add_middleware(
     allow_headers=["*"],  # Allows all headers
 )
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 
 class Connection(BaseModel):
@@ -75,7 +82,7 @@ class Preset(BaseModel):
 def get_status():
     # print("GET STATUS RUNNING")
     resp = make_request("23.239.12.151:32349", "GET", "blockchain get *")
-    return {"status": resp} 
+    return {"status": resp}
     # user = supabase_get_user()
     # return {"data": user}
 
@@ -99,7 +106,7 @@ def get_user(token: AccessToken):
     return {"data": user}
 
 @app.post("/login/")
-def login(info: UserLoginInfo):  
+def login(info: UserLoginInfo):
     response = supabase_login(info.email, info.password)
     return {"data": response}
 
@@ -280,7 +287,7 @@ def get_presets(token: AccessToken, group_id: PresetGroupID):
 
     resp = auth.supabase_get_presets_by_group(user_id, group_id.group_id)
     print("Presets response:", resp)
-    
+
     return {"data": resp.data}
 
 
@@ -314,7 +321,7 @@ def delete_preset_group(token: AccessToken, group_id: PresetGroupID):
 def view_blobs(conn: Connection, blobs: dict):
     print("conn", conn.conn)
     # print("blobs", blobs['blobs'])
-    
+
     file_list = []
     for blob in blobs['blobs']:
         print("blob", blob)
