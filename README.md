@@ -48,7 +48,7 @@ Before you begin, ensure you have the following installed:
 fastapi dev main.py
 
 # Run on cloud 
-fastapi dev CLI/Local-CLI/local-cli-backend/main.py   --host 0.0.0.0 --port 8000
+fastapi dev CLI/Local_CLI/local_cli_backend/main.py   --host 0.0.0.0 --port 8000
 ```
 
 5. The backend server should now be running at `http://127.0.0.1:8000`.
