@@ -1,19 +1,13 @@
-import os
-
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi import Body
 from pydantic import BaseModel
 from typing import Dict
 from parsers import parse_response
-from auth import supabase_signup, supabase_get_user, supabase_login, supabase_logout, supabase_bookmark_node, supabase_get_bookmarked_nodes
+import auth
+from auth import supabase_signup, supabase_get_user, supabase_login, supabase_logout, supabase_bookmark_node, supabase_get_bookmarked_nodes, supabase_delete_bookmarked_node, supabase_update_bookmark_description
 from helpers import make_request, grab_network_nodes, monitor_network, make_policy, send_json_data
-
-# blobs dir
-ROOT_PATH = os.path.dirname(__file__)
-BLOBS_DIR = os.path.join(ROOT_PATH, 'static')
-if not os.path.isdir(BLOBS_DIR):
-    os.makedirs(BLOBS_DIR)
 
 app = FastAPI()
 
@@ -21,15 +15,17 @@ app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # Change this to your React app's URL for security
-    allow_credentials=False,  # Set to True only when you have a specific domain
+    allow_credentials=True,
     allow_methods=["*"],  # Allows GET, POST, PUT, DELETE, etc.
     allow_headers=["*"],  # Allows all headers
 )
 
-app.mount("/static", StaticFiles(directory=BLOBS_DIR), name="static")
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
 
 class Connection(BaseModel):
     conn: str
+
 
 class DBConnection(BaseModel):
     dbms: str
@@ -55,6 +51,25 @@ class AccessToken(BaseModel):
 class Policy(BaseModel):
     name: str  # Policy name
     data: Dict[str, str]  # Key-value pairs
+
+class BookmarkUpdateRequest(BaseModel):
+    token: AccessToken
+    node: str
+    description: str
+
+class PresetGroup(BaseModel):
+    group_name: str
+
+class PresetGroupID(BaseModel):
+    group_id: int
+
+class Preset(BaseModel):
+    group_id: int
+    command: str
+    type: str  # "GET" or "POST"
+    button: str
+
+
 
 @app.get("/")
 def get_status():
@@ -174,6 +189,125 @@ def get_bookmarked_nodes(token: AccessToken):
     print("Bookmarked nodes response:", resp)
     return {"data": resp.data}
 
+@app.post("/delete-bookmarked-node/")
+def delete_bookmarked_node(token: AccessToken, conn: Connection):
+    """
+    Delete a bookmarked node for the authenticated user.
+    """
+    print("token: ", token.jwt)
+    print("node: ", conn.conn)
+
+    user = supabase_get_user(token.jwt)
+    user_id = user.user.id
+
+    response = supabase_delete_bookmarked_node(user_id, conn.conn)
+    print("Delete bookmark response:", response)
+
+    return {"data": response.data}
+
+@app.post("/update-bookmark-description/")
+def update_bookmark_description(request: BookmarkUpdateRequest):
+    user = supabase_get_user(request.token.jwt)
+    user_id = user.user.id
+
+    response = supabase_update_bookmark_description(user_id, request.node, request.description)
+    return {"data": response.data}
+
+
+@app.post("/add-preset-group/")
+def add_preset_group(token: AccessToken, group: PresetGroup):
+    """
+    Bookmark a node by sending a command to the AnyLog server.
+    """
+    print("token", token.jwt)
+    print("name", group.group_name)
+
+    user = supabase_get_user(token.jwt)
+
+    print(user.user.id)
+
+    user_id = user.user.id
+
+    resp = auth.supabase_add_preset_group(user_id, group.group_name)
+    print("presetgroup response:", resp)
+
+    return {"data": resp}
+
+@app.post("/get-preset-groups/")
+def get_preset_groups(token: AccessToken):
+    """
+    Get all bookmarked nodes for the authenticated user.
+    """
+    print("token: ", token)
+    user = supabase_get_user(token.jwt)
+    user_id = user.user.id
+    print("User ID:", user_id)
+    resp = auth.supabase_get_preset_groups(user_id)
+    print("Preset groups response:", resp)
+    return {"data": resp.data}
+
+
+@app.post("/add-preset/")
+def add_preset_to_group(token: AccessToken, preset: Preset):
+    """
+    Bookmark a node by sending a command to the AnyLog server.
+    """
+    print("token", token.jwt)
+    print("preset", preset)
+
+    user = supabase_get_user(token.jwt)
+
+    print(user.user.id)
+
+    user_id = user.user.id
+
+    resp = auth.supabase_add_preset_to_group(user_id, preset.group_id, preset.command, preset.type, preset.button)
+    print("preset response:", resp)
+
+    return {"data": resp}
+
+@app.post("/get-presets/")
+def get_presets(token: AccessToken, group_id: PresetGroupID):
+    """
+    Get all presets for a specific group for the authenticated user.
+    """
+    print("token: ", token.jwt)
+    print("group_id: ", group_id.group_id)
+
+    user = supabase_get_user(token.jwt)
+    user_id = user.user.id
+    print("User ID:", user_id)
+
+    resp = auth.supabase_get_presets_by_group(user_id, group_id.group_id)
+    print("Presets response:", resp)
+    
+    return {"data": resp.data}
+
+
+@app.post("/delete-preset-group/")
+def delete_preset_group(token: AccessToken, group_id: PresetGroupID):
+    """
+    Bookmark a node by sending a command to the AnyLog server.
+    """
+    print("token", token.jwt)
+    print("name", group_id.group_id)
+
+    user = supabase_get_user(token.jwt)
+
+    print(user.user.id)
+
+    user_id = user.user.id
+
+    resp = auth.supabase_delete_preset_group(user_id, group_id.group_id)
+    print("presetgroupdelete response:", resp)
+
+    return {"data": resp}
+
+
+
+
+
+
 
 
 @app.post("/view-blobs/")
@@ -190,18 +324,16 @@ def view_blobs(conn: Connection, blobs: dict):
         operator_dbms = blob['dbms_name']
         operator_table = blob['table_name']
         operator_file = blob['file']
-
-        # blobs_dir = '/app/CLI/Local-CLI/local-cli-fe-full/public/static'
-        # blobs_dir = "/app/Remote-CLI/djangoProject/static/blobs/current/"
         file_list.append(operator_file)
 
         # blobs_dir = "/app/Remote-CLI/djangoProject/static/blobs/current/"
+        blobs_dir = "/app/CLI/Local-CLI/local-cli-backend/static/"
         print("IP:Port", ip_port)
 
         # cmd = f'run client ({ip_port}) file get !!blockchain_file !blockchain_file'
         # cmd = f'run client ({ip_port}) file get !!blobs_dir/{operator_file} !blobs_dir/{operator_file}'
 
-        cmd = f"run client ({ip_port}) file get (dbms = blobs_{operator_dbms} and table = {operator_table} and id = {operator_file}) {BLOBS_DIR}{operator_dbms}.{operator_table}.{operator_file}"  # Add file full path and name for the destination on THIS MACHINE
+        cmd = f"run client ({ip_port}) file get (dbms = blobs_{operator_dbms} and table = {operator_table} and id = {operator_file}) {blobs_dir}{operator_dbms}.{operator_table}.{operator_file}"  # Add file full path and name for the destination on THIS MACHINE
         raw_response = make_request(conn.conn, "POST", cmd)
 
         print("raw_response", raw_response)
