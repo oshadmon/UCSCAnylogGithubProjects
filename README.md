@@ -100,12 +100,19 @@ Use `23.239.12.151:32349` as the IP and port to connect to a hosted node.
 
 
 ## Docker 
-1. To build -- currently pushed so no need build unless changing version 
+1. To build - `docker build -f Dockerfile . -t gui`
+2. To run 
+   * Local 
 ```shell
-docker build . -t oshadmon/gui:latest
+docker run -it --rm -p 8000:8000 -p 3001:3001 -e REACT_APP_API_URL=http://127.0.0.1:8000   --name gui oshadmon/gui:test
 ```
-
-2. run 
+   * Production
 ```shell
-docker run -it -d --network host --rm oshadmon/gui:latest
-``` 
+docker run -d \
+  --name gui \
+  -p 8000:8000 \
+  -p 3001:3001 \
+  -e REACT_APP_API_URL=http:/${EXTERNAL_IP}:8000 \
+  -e FRONTEND_URL=http://${EXTERNAL_IP}:3001 \
+  oshadmon/gui:test
+```

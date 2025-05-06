@@ -33,8 +33,9 @@ RUN $VIRTUAL_ENV/bin/python setup.py sdist bdist_wheel && \
 # Build frontend
 WORKDIR /app/CLI/Local-CLI/local-cli-fe-full
 # ARG REACT_APP_API_URL=http://0.0.0.0:8000
-ENV REACT_APP_API_URL=http://127.0.0.1:8000
-RUN npm install && REACT_APP_API_URL=http://${REACT_APP_API_URL} npm run build
+# ENV REACT_APP_API_URL=http://127.0.0.1:8000
+RUN npm install
+# && REACT_APP_API_URL=http://${REACT_APP_API_URL} npm run build
 
 # --- final deployment stage
 FROM python:3.11-slim AS deployment
@@ -53,10 +54,13 @@ RUN apt-get update && \
 WORKDIR /app
 
 # Copy built app and venv
+WORKDIR /app
+
 COPY --from=base /opt/venv /opt/venv
 COPY --from=base /app /app
+COPY start.sh /app/start.sh
+RUN chmod +x /app/start.sh
 
 EXPOSE 8000 3001
 
-# Start backend and frontend
-CMD bash -c "$VIRTUAL_ENV/bin/uvicorn CLI.Local-CLI.local-cli-backend.main:app --host $CLI_IP --port $CLI_PORT & serve -s /app/CLI/Local-CLI/local-cli-fe-full/build -l 3001"
+CMD ["/app/start.sh"]
