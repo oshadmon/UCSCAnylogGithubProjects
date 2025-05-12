@@ -5,9 +5,11 @@ from fastapi import Body
 from pydantic import BaseModel
 from typing import Dict
 from parsers import parse_response
+from classes import *
 import auth
 from auth import supabase_signup, supabase_get_user, supabase_login, supabase_logout, supabase_bookmark_node, supabase_get_bookmarked_nodes, supabase_delete_bookmarked_node, supabase_update_bookmark_description
-from helpers import make_request, grab_network_nodes, monitor_network, make_policy, send_json_data
+from helpers import make_request, grab_network_nodes, monitor_network, make_policy, send_json_data, make_preset_policy
+import helpers
 
 app = FastAPI()
 
@@ -21,53 +23,6 @@ app.add_middleware(
 )
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
-
-
-class Connection(BaseModel):
-    conn: str
-
-
-class DBConnection(BaseModel):
-    dbms: str
-    table: str
-
-class Command(BaseModel):
-    type: str # "GET" or "POST"
-    cmd: str
-
-class UserSignupInfo(BaseModel):
-    email: str
-    password: str
-    firstname: str
-    lastname: str
-
-class UserLoginInfo(BaseModel):
-    email: str
-    password: str
-
-class AccessToken(BaseModel):
-    jwt: str
-
-class Policy(BaseModel):
-    name: str  # Policy name
-    data: Dict[str, str]  # Key-value pairs
-
-class BookmarkUpdateRequest(BaseModel):
-    token: AccessToken
-    node: str
-    description: str
-
-class PresetGroup(BaseModel):
-    group_name: str
-
-class PresetGroupID(BaseModel):
-    group_id: int
-
-class Preset(BaseModel):
-    group_id: int
-    command: str
-    type: str  # "GET" or "POST"
-    button: str
 
 
 
@@ -229,6 +184,11 @@ def add_preset_group(token: AccessToken, group: PresetGroup):
     user_id = user.user.id
 
     resp = auth.supabase_add_preset_group(user_id, group.group_name)
+
+    r2 = helpers.make_preset_group_policy("45.33.110.211:32549", group.group_name)
+    parsed = parse_response(r2)
+    print("parsed from group policy:", parsed)
+
     print("presetgroup response:", resp)
 
     return {"data": resp}
@@ -262,7 +222,12 @@ def add_preset_to_group(token: AccessToken, preset: Preset):
     user_id = user.user.id
 
     resp = auth.supabase_add_preset_to_group(user_id, preset.group_id, preset.command, preset.type, preset.button)
-    print("preset response:", resp)
+    resp2 = make_preset_policy("45.33.110.211:32549", preset, preset.group_name)
+
+    parsed = parse_response(resp2)
+    print("parsed:", parsed['data']['bookmark'])
+
+    # print("preset other response:", resp)
 
     return {"data": resp}
 
@@ -285,12 +250,14 @@ def get_presets(token: AccessToken, group_id: PresetGroupID):
 
 
 @app.post("/delete-preset-group/")
-def delete_preset_group(token: AccessToken, group_id: PresetGroupID):
+def delete_preset_group(token: AccessToken, group_id: PresetGroupID, group: PresetGroup):
     """
     Bookmark a node by sending a command to the AnyLog server.
     """
     print("token", token.jwt)
     print("name", group_id.group_id)
+    print("GROUP NAMEMMMMMEMEMEME:", group.group_name)
+
 
     user = supabase_get_user(token.jwt)
 
@@ -299,10 +266,27 @@ def delete_preset_group(token: AccessToken, group_id: PresetGroupID):
     user_id = user.user.id
 
     resp = auth.supabase_delete_preset_group(user_id, group_id.group_id)
+
+    r2 = helpers.delete_preset_group_policy("45.33.110.211:32549", group.group_name)
+    parsed = parse_response(r2)
+    print("parsed from group policy:", parsed)
     print("presetgroupdelete response:", resp)
 
     return {"data": resp}
 
+@app.post("/get-preset-policy/")
+def get_preset_policy():
+    """
+    Get all presets for a specific group for the authenticated user.
+    """
+
+    resp = helpers.get_preset_base_policy("45.33.110.211:32549")
+    parsed = parse_response(resp)
+    lb = parsed['data']['bookmark']['bookmarks']
+    print("list of bookmarks:", lb)
+    filtered_lb = {key: value for key, value in lb.items() if isinstance(value, dict)}
+    
+    return {"data": filtered_lb}
 
 
 

@@ -7,7 +7,10 @@ import datetime
 import json
 import requests
 
+from classes import *
+
 import anylog_api.anylog_connector as anylog_connector
+
 
 # Connect to AnyLog / EdgeLake connector
 conn = '10.0.0.11:32249'
@@ -109,6 +112,8 @@ def make_policy(conn:str, policy: Policy):
     print(f"Blockchain Policy Response: {blockchain_response}")
 
     return blockchain_response
+
+
 
 def make_request(conn, method, command, topic=None, destination=None, payload=None):
 
@@ -270,3 +275,88 @@ def send_json_data(conn, dbms, table, data):
     print("Streaming:", response)
 
     return response 
+
+
+
+
+
+
+
+def get_preset_base_policy(conn: str):
+    # Retrieve the created preset policy (GET)
+    # NEEDS TO BE CHANGED INTO FROM X BRING Y
+    get_policy_command = "get !bookmark_policy"
+    print(f"Fetching Preset Policy: {get_policy_command}")
+    policy_response = make_request(conn, "GET", get_policy_command)
+    print(f"Preset Policy Response: {policy_response}")
+    
+    return policy_response
+
+
+def check_preset_basepolicy(conn: str):
+    resp = get_preset_base_policy(conn)
+    print("check_policycmd", resp)
+    if resp is None:
+        c1 = "set policy bookmark_policy [bookmark] = {}"
+        resp = make_request(conn, "POST", c1)
+        print("setnewpolicyresp", resp)
+
+        c2 = "set policy bookmark_policy [bookmark][bookmarks] = {}"
+        resp = make_request(conn, "POST", c2)
+        print("setbookmarksemptyresp", resp)
+
+    return get_preset_base_policy(conn)
+
+
+def make_preset_group_policy(conn: str, group_name:str):
+    check_preset_basepolicy(conn)
+
+    policy_command = f'set policy bookmark_policy [bookmark][bookmarks][{group_name}] = {{}}'
+
+    # Submit the preset policy (POST)
+    print(f"Submitting Preset Group Policy: {policy_command}")
+    make_request(conn, "POST", policy_command)
+
+    basepolicy = get_preset_base_policy(conn)
+
+    return basepolicy
+
+
+
+def make_preset_policy(conn: str, preset: Preset, group_name: str):
+    name = preset.button
+    cmd = preset.command
+    type = preset.type
+
+
+    check_preset_basepolicy(conn)
+
+
+    # Construct the policy command for the preset
+    # set policy bookmark_policy [bookmark][bookmarks][event-log] = {"type": "get", "value": "get event log"}
+    policy_command = f'set policy bookmark_policy [bookmark][bookmarks][{group_name}][{name}] = {{"type": "{type.lower()}", "command": "{cmd}"}}'
+
+    # Submit the preset policy (POST)
+    print(f"Submitting Preset Policy: {policy_command}")
+    make_request(conn, "POST", policy_command)
+
+    basepolicy = get_preset_base_policy(conn)
+
+    return basepolicy
+
+
+
+def delete_preset_group_policy(conn: str, group_name:str):
+    check_preset_basepolicy(conn)
+
+    # Construct the policy command for the preset
+    # set policy bookmark_policy [bookmark][bookmarks][event-log] = {"type": "get", "value": "get event log"}
+    policy_command = f'set policy bookmark_policy [bookmark][bookmarks][{group_name}] = ""'
+
+    # Submit the preset policy (POST)
+    print(f"Submitting Preset Policy: {policy_command}")
+    make_request(conn, "POST", policy_command)
+
+    basepolicy = get_preset_base_policy(conn)
+
+    return basepolicy

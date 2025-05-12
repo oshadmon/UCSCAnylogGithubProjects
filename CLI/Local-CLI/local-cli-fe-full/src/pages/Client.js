@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import DataTable from '../components/DataTable'; // Adjust path as needed
 import BlobsTable from '../components/BlobsTable'; // Adjust path as needed
-import { sendCommand, viewBlobs } from '../services/api'; // Adjust path as needed
+import { sendCommand, viewBlobs, getBasePresetPolicy } from '../services/api'; // Adjust path as needed
 import '../styles/Client.css'; // Optional: create client-specific CSS
 import { useEffect } from 'react';
 
@@ -12,6 +12,9 @@ const Client = ({ node }) => {
   const [command, setCommand] = useState('get status');
   const [method, setMethod] = useState('GET'); // Default to GET
   // const [response, setResponse] = useState('');
+  const [presetGroups, setPresetGroups] = useState({});
+  const [showPresets, setShowPresets] = useState(true);
+
 
 
   const [loading, setLoading] = useState(false);
@@ -26,6 +29,39 @@ const Client = ({ node }) => {
   useEffect(() => {
     console.log('Selected blobs:', selectedBlobs);
   }, [selectedBlobs]);
+
+  // Fetch presets once on mount
+  useEffect(() => {
+    (async () => {
+      try {
+        const groups = await getBasePresetPolicy();
+        const rawGroups = groups.data;
+        const groupsArray = Object.entries(rawGroups).map(
+          ([groupName, presetsObj]) => ({
+            id: groupName,
+            name: groupName,
+            presets: Object.entries(presetsObj).map(
+              ([presetName, { type, command }]) => ({
+                id: presetName,
+                buttonName: presetName,
+                type: type.toUpperCase(),
+                command,
+              })
+            ),
+          })
+        );
+
+        setPresetGroups(groupsArray);
+      } catch (err) {
+        console.error('Failed to load presets', err);
+      }
+    })();
+  }, []);
+
+  const handleApplyPreset = ({ command: cmd, type }) => {
+    setCommand(cmd);
+    setMethod(type.toUpperCase());
+  };
 
 
   const toggleAuth = () => {
@@ -82,7 +118,7 @@ const Client = ({ node }) => {
 
     try {
       // Build a comma-separated list of IDs (adjust if your blobs use a different key)
-      const blobs = {blobs: selectedBlobs}
+      const blobs = { blobs: selectedBlobs }
       // console.log('Fetching blobs:', blobs);
       const result = await viewBlobs({
         connectInfo: node,
@@ -113,6 +149,39 @@ const Client = ({ node }) => {
       <p>
         <strong>Connected Node:</strong> {node}
       </p>
+
+      <button
+        type="button"
+        className="toggle-presets-button"
+        onClick={() => setShowPresets(v => !v)}
+      >
+        {showPresets ? 'Hide Presets' : 'Show Presets'}
+      </button>
+
+      {/* PRESETS PANEL */}
+      {showPresets && presetGroups.length > 0 && (
+        // inside your render:
+        <div className="presets-panel">
+          {presetGroups.map(group => (
+            <details key={group.id} className="preset-group">
+              <summary>{group.name}</summary>
+              <div className="preset-buttons">
+                {group.presets.map(p => (
+                  <button
+                    key={p.id}
+                    type="button"
+                    className="preset-button"
+                    onClick={() => handleApplyPreset({ command: p.command, type: p.type })}
+                  >
+                    {p.buttonName}
+                  </button>
+                ))}
+              </div>
+            </details>
+          ))}
+        </div>
+
+      )}
       <form onSubmit={handleSubmit} className="client-form">
         <div className="form-group">
           <label>HTTP Method:</label>
