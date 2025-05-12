@@ -81,3 +81,62 @@
     font-weight: bold;
   }
   
+
+  /* in Client.css */
+
+.presets-panel {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;     /* if you have many groups */
+}
+
+.preset-group {
+  flex: 1 0 200px;       /* each panel is at least 200px wide */
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: #fafafa;
+  padding: 0.5rem;
+}
+
+/* style the summary (the “header”) */
+.preset-group summary {
+  cursor: pointer;
+  font-weight: bold;
+  list-style: none;      /* remove default arrow if you like */
+}
+
+/* hide the default marker and add your own */
+.preset-group summary::-webkit-details-marker {
+  display: none;
+}
+.preset-group summary::before {
+  content: '▸';
+  display: inline-block;
+  margin-right: 0.25rem;
+  transform-origin: center;
+  transition: transform 0.2s;
+}
+.preset-group[open] summary::before {
+  transform: rotate(90deg);
+}
+
+/* buttons container */
+.preset-buttons {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.toggle-presets-button {
+  margin-bottom: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  border: 1px solid #0056b3;
+  border-radius: 3px;
+  background: blu;
+}
+.toggle-presets-button:hover {
+  background: #1a71ce;
+}
