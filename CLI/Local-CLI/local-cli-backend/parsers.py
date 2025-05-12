@@ -12,7 +12,7 @@ def parse_table_fixed(text: str) -> list:
 
     separator_index = 0
     for i, row in enumerate(lines):
-        if '|' in row or '---' in row:
+        if row and ('|' in row or '---' in row):
             separator_index = i
             break
     
