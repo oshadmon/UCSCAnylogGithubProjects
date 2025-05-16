@@ -92,7 +92,7 @@ const Monitor = ({ node }) => {
 
   return (
     <div className="monitor-container">
-      <h2>Monitor Section</h2>
+      <h2>Monitor Node Section</h2>
       <div style={{ marginBottom: '10px' }}>
         <p>
           <strong>Connected Node:</strong> {node}
