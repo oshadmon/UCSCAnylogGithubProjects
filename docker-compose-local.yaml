@@ -1,6 +1,6 @@
 services:
   remote-cli-new:
-    image: oshadmon/gui:latest
+    image: gui:latest
     container_name: gui
     restart: always
     stdin_open: true
