@@ -12,6 +12,8 @@ const ViewFiles = ({files = null}) => {
 
   // List of your filenames in public/static/
   const dummyFiles = [
+    '0e5646150cddf0549be1e165bf878090.jpeg',
+    '277d090b5cdbd0a539315e48708e6168.jpeg',
     'anylogLogo.png',
     // 'report.pdf',
     'flower.jpg',
