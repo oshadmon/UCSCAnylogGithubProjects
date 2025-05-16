@@ -1,0 +1,5 @@
+*
+CLI/Local-CLI/local-cli-backend/static
+!CLI/
+!requirements.txt
+!start.sh
