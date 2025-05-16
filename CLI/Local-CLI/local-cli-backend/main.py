@@ -36,9 +36,20 @@ app.add_middleware(
 
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
-
-
 @app.get("/")
+def list_static_files():
+    try:
+        files = []
+        for root, dirs, filenames in os.walk(STATIC_DIR):
+            for filename in filenames:
+                rel_dir = os.path.relpath(root, STATIC_DIR)
+                rel_file = os.path.join(rel_dir, filename) if rel_dir != '.' else filename
+                files.append(rel_file)
+        return {"files": files}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# @app.get("/")
 def get_status():
     # print("GET STATUS RUNNING")
     resp = make_request("23.239.12.151:32349", "GET", "blockchain get *")
