@@ -1,4 +1,5 @@
-import React, { useNavigate, useState } from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import DataTable from '../components/DataTable'; // Adjust path as needed
 import BlobsTable from '../components/BlobsTable'; // Adjust path as needed
 import { sendCommand, viewBlobs, getBasePresetPolicy } from '../services/api'; // Adjust path as needed
