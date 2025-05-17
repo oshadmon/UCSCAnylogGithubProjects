@@ -13,6 +13,7 @@ const ViewFiles = () => {
   const [expandedFile, setExpandedFile] = useState(null);
 
   const location = useLocation();
+  console.log('ViewFiles location:', location);
   const { files } = location.state || {}; // Use optional chaining to avoid errors if state is undefined
   console.log('ViewFiles component rendered with files state:', {files});
 
