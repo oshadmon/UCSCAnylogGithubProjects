@@ -14,7 +14,7 @@ const ViewFiles = () => {
 
   const location = useLocation();
   const { files } = location.state || {}; // Use optional chaining to avoid errors if state is undefined
-  console.log('ViewFiles component rendered with files:', files);
+  console.log('ViewFiles component rendered with files state:', {files});
 
   // List of your filenames in public/static/
   const dummyFiles = [
