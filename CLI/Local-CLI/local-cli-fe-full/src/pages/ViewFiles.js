@@ -13,9 +13,13 @@ const ViewFiles = () => {
   const [expandedFile, setExpandedFile] = useState(null);
 
   const location = useLocation();
-  console.log('ViewFiles location this should:', location);
-  const { files } = location.state || {}; // Use optional chaining to avoid errors if state is undefined
-  console.log('ViewFiles component rendered with files state:', {files});
+  const { blobs } = location.state || { }; // Use optional chaining to avoid errors if state is undefined
+  console.log('ViewFiles component rendered with files state:', blobs);
+
+  const files = Array.isArray(blobs)
+    ? blobs.map(obj => `${obj.dbms_name}.${obj.table_name}.${obj.file}`)
+    : [];
+  console.log('Files:', files);
 
   // List of your filenames in public/static/
   const dummyFiles = [
