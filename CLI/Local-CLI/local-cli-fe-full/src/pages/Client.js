@@ -134,7 +134,7 @@ const Client = ({ node }) => {
       setError(err.message);
     } finally {
       setLoading(false);
-      navigate('/dashboard/viewfiles', { files: selectedBlobs })
+      navigate('/dashboard/viewfiles', {state: { blobs: selectedBlobs } });
     }
   };
 

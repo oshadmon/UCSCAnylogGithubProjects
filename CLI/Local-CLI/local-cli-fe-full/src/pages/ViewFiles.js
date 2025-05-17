@@ -1,14 +1,19 @@
 // src/pages/ViewFiles.jsx
 import React, {useState} from 'react';
 // import { useParams }       from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import FileViewerAuto      from '../components/FileViewerAuto';
 import '../styles/ViewFiles.css';  // <-- import the new stylesheet
 
 const BACKEND_URL = 'http://localhost:8000';
 
-const ViewFiles = ({files = null}) => {
+const ViewFiles = () => {
+
   // const { fileId } = useParams();
   const [expandedFile, setExpandedFile] = useState(null);
+
+  const location = useLocation();
+  const { files } = location.state || {}; // Use optional chaining to avoid errors if state is undefined
   console.log('ViewFiles component rendered with files:', files);
 
   // List of your filenames in public/static/
