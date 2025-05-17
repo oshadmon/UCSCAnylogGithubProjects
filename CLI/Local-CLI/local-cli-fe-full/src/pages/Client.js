@@ -11,21 +11,16 @@ const Client = ({ node }) => {
   const [authUser, setAuthUser] = useState('');
   const [authPassword, setAuthPassword] = useState('');
   const [command, setCommand] = useState('get status');
-  const [method, setMethod] = useState('GET'); // Default to GET
-  // const [response, setResponse] = useState('');
-  const [presetGroups, setPresetGroups] = useState({});
+  const [method, setMethod] = useState('GET');
+  const [presetGroups, setPresetGroups] = useState([]);
   const [showPresets, setShowPresets] = useState(true);
-
-
-
+  const [showEmptyButtons, setShowEmptyButtons] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [showAuth, setShowAuth] = useState(false);
-
-  const [resultType, setResultType] = useState('');       // 'table' | 'blobs' | other
-  const [responseData, setResponseData] = useState(null); // array or string
-  const [selectedBlobs, setSelectedBlobs] = useState([]); // only for blobs
-
+  const [resultType, setResultType] = useState('');
+  const [responseData, setResponseData] = useState(null);
+  const [selectedBlobs, setSelectedBlobs] = useState([]);
 
   useEffect(() => {
     console.log('Selected blobs:', selectedBlobs);
@@ -64,7 +59,6 @@ const Client = ({ node }) => {
     setMethod(type.toUpperCase());
   };
 
-
   const toggleAuth = () => {
     setShowAuth(!showAuth);
   };
@@ -78,7 +72,7 @@ const Client = ({ node }) => {
 
     try {
       const result = await sendCommand({
-        connectInfo: node, // Use the provided node (ip:port)
+        connectInfo: node,
         method,
         command,
         authUser,
@@ -88,12 +82,11 @@ const Client = ({ node }) => {
       setResultType(result.type);
 
       // If the API returns an array (table data), store it directly.
-      if (result.type === "table") {
+      if (result.type === 'table') {
         setResponseData(result.data);
-      }
-      else if (result.type === 'blobs') {
+      } else if (result.type === 'blobs') {
         setResponseData(result.data);
-        setSelectedBlobs([]);  // clear any previous selection
+        setSelectedBlobs([]); // clear any previous selection
       } else {
         setResponseData(
           `Command "${command}" was sent to ${node}.\n\n\n${JSON.stringify(
@@ -119,7 +112,7 @@ const Client = ({ node }) => {
 
     try {
       // Build a comma-separated list of IDs (adjust if your blobs use a different key)
-      const blobs = { blobs: selectedBlobs }
+      const blobs = { blobs: selectedBlobs };
       // console.log('Fetching blobs:', blobs);
       const result = await viewBlobs({
         connectInfo: node,
@@ -127,8 +120,7 @@ const Client = ({ node }) => {
       });
 
       console.log('Result:', result);
-
-      // // Reuse your existing state machinery to display the new result
+    // // Reuse your existing state machinery to display the new result
       // setResultType(result.type);
       // setResponseData(result.type === 'table' || result.type === 'blobs'
       //   ? result.data
@@ -155,25 +147,29 @@ const Client = ({ node }) => {
       <button
         type="button"
         className="toggle-presets-button"
-        onClick={() => setShowPresets(v => !v)}
+        onClick={() => {
+          setShowPresets((v) => !v);
+          setShowEmptyButtons((v) => !v);
+        }}
       >
         {showPresets ? 'Hide Presets' : 'Show Presets'}
       </button>
-
+      
       {/* PRESETS PANEL */}
       {showPresets && presetGroups.length > 0 && (
-        // inside your render:
         <div className="presets-panel">
-          {presetGroups.map(group => (
+          {presetGroups.map((group) => (
             <details key={group.id} className="preset-group">
               <summary>{group.name}</summary>
               <div className="preset-buttons">
-                {group.presets.map(p => (
+                {group.presets.map((p) => (
                   <button
                     key={p.id}
                     type="button"
                     className="preset-button"
-                    onClick={() => handleApplyPreset({ command: p.command, type: p.type })}
+                    onClick={() =>
+                      handleApplyPreset({ command: p.command, type: p.type })
+                    }
                   >
                     {p.buttonName}
                   </button>
@@ -182,8 +178,39 @@ const Client = ({ node }) => {
             </details>
           ))}
         </div>
-
       )}
+
+      {showEmptyButtons && (
+        <div className="preset-buttons" style={{ marginTop: '1rem' }}>
+          {[
+            { label: 'Node Status', command: 'get status' },
+            { label: 'Get Processes', command: 'get processes' },
+            { label: 'Get Dictionary', command: 'get dictionary' },
+            { label: 'Disk Usage', command: 'get disk usage .' },
+            { label: 'Disk Counters', command: 'get node info disk_io_counters' },
+            { label: 'CPU Usage', command: 'get cpu usage' },
+            { label: 'Platform Info', command: 'get platform info' },
+            { label: 'Memory Info', command: 'get memory info' },
+            { label: 'Network Info', command: 'get node info net_io_counters' },
+            { label: 'Swap Memory', command: 'get node info swap_memory' },
+            { label: 'Members List', command: 'blockchain get (operator, publisher, query) bring.table [*][name] [*][country] [*][city] [*][ip] [*][port]' },
+            { label: 'USA Members', command: 'blockchain get (operator, publisher, query) where [country] contains US bring.table [*][name] [*][country] [*][city] [*][ip] [*][port]' },
+            { label: 'Target USA', command: 'blockchain get (operator, publisher, query) where [country] contains US  bring [*][ip] : [*][port]  separator = ,' },
+            { label: 'AFG Operators', command: 'blockchain get operator where [company] contains AFG bring.table [*][name] [*][country] [*][city] [*][ip] [*][port]' },
+            { label: 'Target AFG', command: 'blockchain get operator where [company] contains AFG bring [operator][ip] : [operator][port]  separator = ,' },
+          ].map(({ label, command }, index) => (
+            <button
+              key={index}
+              className="preset-button"
+              onClick={() => setCommand(command)}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      )}
+
+
       <form onSubmit={handleSubmit} className="client-form">
         <div className="form-group">
           <label>HTTP Method:</label>
@@ -277,7 +304,7 @@ const Client = ({ node }) => {
           {resultType === 'blobs' && Array.isArray(responseData) && (
             <BlobsTable
               data={responseData}
-              keyField="id"                     // adjust if blobs use a different unique key
+              keyField="id" // adjust if blobs use a different unique key
               onSelectionChange={setSelectedBlobs}
             />
           )}
@@ -287,8 +314,6 @@ const Client = ({ node }) => {
           )}
         </div>
       )}
-
-
     </div>
   );
 };
