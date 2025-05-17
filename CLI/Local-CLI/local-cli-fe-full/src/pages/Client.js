@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useNavigate, useState } from 'react';
 import DataTable from '../components/DataTable'; // Adjust path as needed
 import BlobsTable from '../components/BlobsTable'; // Adjust path as needed
 import { sendCommand, viewBlobs, getBasePresetPolicy } from '../services/api'; // Adjust path as needed
@@ -6,6 +6,7 @@ import '../styles/Client.css'; // Optional: create client-specific CSS
 import { useEffect } from 'react';
 
 const Client = ({ node }) => {
+    const navigate = useNavigate();
   // Since the node is provided as a prop, we no longer need a "Connect info" field.
   const [authUser, setAuthUser] = useState('');
   const [authPassword, setAuthPassword] = useState('');
@@ -140,6 +141,7 @@ const Client = ({ node }) => {
       setError(err.message);
     } finally {
       setLoading(false);
+      navigate('/view-files', { state: { files: selectedBlobs } })
     }
   };
 
