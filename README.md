@@ -116,3 +116,16 @@ docker run -d \
   -e FRONTEND_URL=http://${EXTERNAL_IP}:3001 \
   oshadmon/gui:test
 ```
+
+
+
+
+# Feature Docs
+
+## Client
+
+## Monitor
+
+## Policies
+
+## AddData
