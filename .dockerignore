@@ -1,5 +1,6 @@
 *
 CLI/Local-CLI/local-cli-backend/static
 !CLI/
+!templates/
 !requirements.txt
 !start.sh
