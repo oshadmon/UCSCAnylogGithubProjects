@@ -111,16 +111,16 @@ const NodePicker = ({ nodes, selectedNode, onAddNode, onSelectNode }) => {
       <button className="node-picker-btn" onClick={handleAdd}>
         Use
       </button>
-      <button className="node-picker-btn" onClick={handleAddConnectedNodes}>
+      {/* <button className="node-picker-btn" onClick={handleAddConnectedNodes}>
         Add Connected Nodes
-      </button>
+      </button> */}
       <button className="node-picker-btn" onClick={handleBookmark}>
         Bookmark
       </button>
-      <label className="local-label">
+      {/* <label className="local-label">
         <input type="checkbox" checked={local} onChange={handleLocalChange} />
         Local
-      </label>
+      </label> */}
       {bookmarkMsg && (
         <div className="bookmark-msg" style={{ color: 'red', marginTop: '0.5rem', marginBlockStart: '0.5rem' }}>
           {bookmarkMsg}
