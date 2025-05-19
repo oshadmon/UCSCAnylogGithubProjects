@@ -5,7 +5,13 @@ import { useLocation } from 'react-router-dom';
 import FileViewerAuto      from '../components/FileViewerAuto';
 import '../styles/ViewFiles.css';  // <-- import the new stylesheet
 
-const BACKEND_URL = 'http://localhost:8000';
+// add http:// if missing
+let rawUrl = (process.env.BACKEND_URL || process.env.REACT_APP_API_URL || 'localhost:8000').trim();
+if (!/^https?:\/\//i.test(rawUrl)) {
+  rawUrl = `http://${rawUrl}`;
+}
+const BACKEND_URL = rawUrl;
+//const BACKEND_URL = 'http://localhost:8000';
 
 const ViewFiles = () => {
 
